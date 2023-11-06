@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+message InsertUserRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message InsertUserResponce{
+    bool success = 1;
+}
+message StoreMessageResponce{
+    bool success = 1;
+}
+
+//нужно будет добавить дополнительные поля
+message Message {
+  string sender = 1;
+  string recipient = 2;
+  string text = 3;
+}
+
+message GetMessagesRequset{
+    string user = 1;
+}
+
+message UserExistsRequest{
+    string user = 1;
+}
+
+message UserExistsResponse{
+    bool exists = 1;
+}
+
+service Database {
+  // Define your RPC methods here.
+  rpc InsertUser(InsertUserRequest) returns (InsertUserResponce) {};
+  rpc UserExists (UserExistsRequest) returns (UserExistsResponse) {};
+  rpc StoreMessage(Message) returns (StoreMessageResponce) {};
+  rpc GetMessages(GetMessagesRequset) returns (stream Message) {};
+}

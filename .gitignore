@@ -1,0 +1,34 @@
+# Игнорировать временные файлы и каталоги
+*.swp
+*.swo
+*.swn
+.DS_Store
+Thumbs.db
+__pycache__
+node_modules/
+build/
+**/build/**
+dist/
+.idea/
+
+# Игнорировать файлы и каталоги, создаваемые средой разработки
+.vscode/
+*.suo
+*.user
+*.sln
+*.csproj
+*.userprefs
+*.yml
+*.plist
+*.dSYM
+
+# Игнорировать зависимости и бинарные файлы
+vendor/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Игнорировать временные и создаваемые файлы в папке сборки
+*.log
+*.tmp
