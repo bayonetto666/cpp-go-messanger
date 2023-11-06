@@ -37,9 +37,8 @@ public:
     // void storeMessage(const std::string& sender, const std::string& recipient, const std::string& message, std::string& ex_what);
     void storeMessage(const nlohmann::json& message_json, std::string& error);
 
-
     nlohmann::json getMessages(const std::string& username, std::string& error);
-    
+        
 private:
     mongocxx::client _client;
     mongocxx::database _db;

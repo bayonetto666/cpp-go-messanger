@@ -5,11 +5,14 @@ message InsertUserRequest {
   string password = 2;
 }
 
-message InsertUserResponce{
-    bool success = 1;
+message InsertUserResponse {
+  bool success = 1;
+  string error = 2;
 }
-message StoreMessageResponce{
-    bool success = 1;
+
+message StoreMessageResponse {
+  bool success = 1;
+  string error = 2;
 }
 
 //нужно будет добавить дополнительные поля
