@@ -10,7 +10,7 @@ message InsertUserResponse {
   string error = 2;
 }
 
-message StoreMessageResponse {
+message StoreMessageResponce {
   bool success = 1;
   string error = 2;
 }
@@ -36,7 +36,7 @@ message UserExistsResponse{
 
 service Database {
   // Define your RPC methods here.
-  rpc InsertUser(InsertUserRequest) returns (InsertUserResponce) {};
+  rpc InsertUser(InsertUserRequest) returns (InsertUserResponse) {};
   rpc UserExists (UserExistsRequest) returns (UserExistsResponse) {};
   rpc StoreMessage(Message) returns (StoreMessageResponce) {};
   rpc GetMessages(GetMessagesRequset) returns (stream Message) {};

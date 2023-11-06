@@ -14,20 +14,23 @@ public:
     DatabaseServiceImpl(): dbh("mongodb://localhost:27017")
     {} 
 
-    grpc::Status InsertUser(grpc::ServerContext* context, const InsertUserRequest* request, InsertUserResponce* response) 
-    override {
-        // Implement the logic for InsertUser RPC
-        // Use request and fill the response.
+    grpc::Status InsertUser(::grpc::ServerContext* context, const ::InsertUserRequest* request, ::InsertUserResponse* response)
+    override
+    {
         std::string error;
         nlohmann::json user_data;
         user_data["username"] = request->username();
         user_data["password"] = request->password();
 
-        bool status = dbh.insertUser(user_data, error);
+        dbh.insertUser(user_data, error);
 
-        if (!status) {
+        if (!error.empty()) {
+            response->set_success(false);
+            response->set_error(error);
             return grpc::Status(grpc::StatusCode::UNKNOWN, error);
         }
+        response->set_success(true);
+
         return grpc::Status::OK;
     }
     
@@ -75,9 +78,11 @@ public:
     dbh.storeMessage(messageData, error);
 
     if (!error.empty()) {
+        response->set_success(false);
+        response->set_error(error);
         return grpc::Status(grpc::StatusCode::UNKNOWN, error);
     }
-
+    response->set_success(true);
     return grpc::Status::OK;
 }
 
@@ -141,16 +146,6 @@ int main() {
     // server->Wait();
 
     RunServer();
-
-    // std::unique_ptr<grpc::Server> server;
-
-    // grpc::ServerBuilder server_builder;
-    // server_builder.AddListeningPort("0.0.0.0:50051", grpc::InsecureServerCredentials());
-    // DatabaseServiceImpl service("mongodb://localhost:27017");
-    // server_builder.RegisterService(&service);
-    // server = server_builder.BuildAndStart();
-    // std::cout << "Server listening on " << std::endl;
-    // server->Wait();
 
     return 0;
 }
