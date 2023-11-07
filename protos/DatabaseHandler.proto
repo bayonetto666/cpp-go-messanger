@@ -3,6 +3,7 @@ syntax = "proto3";
 message InsertUserRequest {
   string username = 1;
   string password = 2;
+  string salt = 3;
 }
 
 message InsertUserResponse {
@@ -10,7 +11,7 @@ message InsertUserResponse {
   string error = 2;
 }
 
-message StoreMessageResponce {
+message StoreMessageResponse {
   bool success = 1;
   string error = 2;
 }
@@ -38,6 +39,6 @@ service Database {
   // Define your RPC methods here.
   rpc InsertUser(InsertUserRequest) returns (InsertUserResponse) {};
   rpc UserExists (UserExistsRequest) returns (UserExistsResponse) {};
-  rpc StoreMessage(Message) returns (StoreMessageResponce) {};
+  rpc StoreMessage(Message) returns (StoreMessageResponse) {};
   rpc GetMessages(GetMessagesRequset) returns (stream Message) {};
 }

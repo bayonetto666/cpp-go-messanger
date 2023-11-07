@@ -16,7 +16,7 @@ public:
         InsertUserRequest request;
         request.set_username(username);
         request.set_password(password);
-        InsertUserResponce response;
+        InsertUserResponse response;
         grpc::ClientContext context;
         grpc::Status status = stub_->InsertUser(&context, request, &response);
         

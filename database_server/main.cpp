@@ -21,6 +21,7 @@ public:
         nlohmann::json user_data;
         user_data["username"] = request->username();
         user_data["password"] = request->password();
+        user_data["salt"] = request->salt();
 
         dbh.insertUser(user_data, error);
 
@@ -47,7 +48,7 @@ public:
         return grpc::Status::OK;
     }
     
-   grpc::Status StoreMessage(::grpc::ServerContext* context, const ::Message* request, ::StoreMessageResponce* response) override {
+   grpc::Status StoreMessage(::grpc::ServerContext* context, const ::Message* request, ::StoreMessageResponse* response) override {
     std::string error;
     nlohmann::json messageData;
     // Iterate over the fields in the request and add them to the JSON object.
@@ -100,9 +101,10 @@ public:
         for (const auto& message : messages) {
             ::Message response_message;
             // Populate response_message fields based on the message JSON.
-            response_message.set_sender(message["sender"]);
-            response_message.set_recipient(message["recipient"]);
-            response_message.set_text(message["text"]);
+            response_message.set_sender(message["sender"].get<std::string>());
+            response_message.set_recipient(message["recipient"].get<std::string>());
+            response_message.set_text(message["text"].get<std::string>());
+
 
             if (!writer->Write(response_message)) {
                 // If writing fails, return an error.
