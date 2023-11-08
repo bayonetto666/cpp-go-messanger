@@ -25,6 +25,7 @@ static const char* Database_method_names[] = {
   "/Database/UserExists",
   "/Database/StoreMessage",
   "/Database/GetMessages",
+  "/Database/GetPassword",
 };
 
 std::unique_ptr< Database::Stub> Database::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -38,6 +39,7 @@ Database::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, 
   , rpcmethod_UserExists_(Database_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_StoreMessage_(Database_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetMessages_(Database_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_GetPassword_(Database_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Database::Stub::InsertUser(::grpc::ClientContext* context, const ::InsertUserRequest& request, ::InsertUserResponse* response) {
@@ -109,20 +111,43 @@ void Database::Stub::async::StoreMessage(::grpc::ClientContext* context, const :
   return result;
 }
 
-::grpc::ClientReader< ::Message>* Database::Stub::GetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequset& request) {
+::grpc::ClientReader< ::Message>* Database::Stub::GetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequest& request) {
   return ::grpc::internal::ClientReaderFactory< ::Message>::Create(channel_.get(), rpcmethod_GetMessages_, context, request);
 }
 
-void Database::Stub::async::GetMessages(::grpc::ClientContext* context, const ::GetMessagesRequset* request, ::grpc::ClientReadReactor< ::Message>* reactor) {
+void Database::Stub::async::GetMessages(::grpc::ClientContext* context, const ::GetMessagesRequest* request, ::grpc::ClientReadReactor< ::Message>* reactor) {
   ::grpc::internal::ClientCallbackReaderFactory< ::Message>::Create(stub_->channel_.get(), stub_->rpcmethod_GetMessages_, context, request, reactor);
 }
 
-::grpc::ClientAsyncReader< ::Message>* Database::Stub::AsyncGetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequset& request, ::grpc::CompletionQueue* cq, void* tag) {
+::grpc::ClientAsyncReader< ::Message>* Database::Stub::AsyncGetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
   return ::grpc::internal::ClientAsyncReaderFactory< ::Message>::Create(channel_.get(), cq, rpcmethod_GetMessages_, context, request, true, tag);
 }
 
-::grpc::ClientAsyncReader< ::Message>* Database::Stub::PrepareAsyncGetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequset& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncReader< ::Message>* Database::Stub::PrepareAsyncGetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequest& request, ::grpc::CompletionQueue* cq) {
   return ::grpc::internal::ClientAsyncReaderFactory< ::Message>::Create(channel_.get(), cq, rpcmethod_GetMessages_, context, request, false, nullptr);
+}
+
+::grpc::Status Database::Stub::GetPassword(::grpc::ClientContext* context, const ::GetPasswordRequest& request, ::GetPasswordResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::GetPasswordRequest, ::GetPasswordResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetPassword_, context, request, response);
+}
+
+void Database::Stub::async::GetPassword(::grpc::ClientContext* context, const ::GetPasswordRequest* request, ::GetPasswordResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::GetPasswordRequest, ::GetPasswordResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetPassword_, context, request, response, std::move(f));
+}
+
+void Database::Stub::async::GetPassword(::grpc::ClientContext* context, const ::GetPasswordRequest* request, ::GetPasswordResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetPassword_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::GetPasswordResponse>* Database::Stub::PrepareAsyncGetPasswordRaw(::grpc::ClientContext* context, const ::GetPasswordRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::GetPasswordResponse, ::GetPasswordRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetPassword_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::GetPasswordResponse>* Database::Stub::AsyncGetPasswordRaw(::grpc::ClientContext* context, const ::GetPasswordRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncGetPasswordRaw(context, request, cq);
+  result->StartCall();
+  return result;
 }
 
 Database::Service::Service() {
@@ -159,12 +184,22 @@ Database::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Database_method_names[3],
       ::grpc::internal::RpcMethod::SERVER_STREAMING,
-      new ::grpc::internal::ServerStreamingHandler< Database::Service, ::GetMessagesRequset, ::Message>(
+      new ::grpc::internal::ServerStreamingHandler< Database::Service, ::GetMessagesRequest, ::Message>(
           [](Database::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::GetMessagesRequset* req,
+             const ::GetMessagesRequest* req,
              ::grpc::ServerWriter<::Message>* writer) {
                return service->GetMessages(ctx, req, writer);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Database_method_names[4],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Database::Service, ::GetPasswordRequest, ::GetPasswordResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Database::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::GetPasswordRequest* req,
+             ::GetPasswordResponse* resp) {
+               return service->GetPassword(ctx, req, resp);
              }, this)));
 }
 
@@ -192,10 +227,17 @@ Database::Service::~Service() {
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status Database::Service::GetMessages(::grpc::ServerContext* context, const ::GetMessagesRequset* request, ::grpc::ServerWriter< ::Message>* writer) {
+::grpc::Status Database::Service::GetMessages(::grpc::ServerContext* context, const ::GetMessagesRequest* request, ::grpc::ServerWriter< ::Message>* writer) {
   (void) context;
   (void) request;
   (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Database::Service::GetPassword(::grpc::ServerContext* context, const ::GetPasswordRequest* request, ::GetPasswordResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 

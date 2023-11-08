@@ -26,7 +26,7 @@ bool Auth::authUser(const std::string &username, const std::string &password, st
     std::string ec;
 
 
-
+    Hasher::verifyPassword()
 
 
     return false;
@@ -43,16 +43,15 @@ bool Auth::registerUser(const std::string& username, const std::string& password
         error = ec;
         return false;
     }
-    
-
 
     std::pair<std::string, std::string> hashed_password = Hasher::hashPassword(password);
 
-    nlohmann::json userData;
-    userData["username"] = username;
-    userData["password"] = hashed_password.first;
-    userData["salt"] = hashed_password.second;
+    // nlohmann::json userData;
+    // userData["username"] = username;
+    // userData["password"] = hashed_password.first;
+    // userData["salt"] = hashed_password.second;
     //отправка на сервер БД
+    _db.insertUser(username, hashed_password.first, hashed_password.second);
 
     return true;
 }
@@ -107,9 +106,9 @@ bool Auth::validateUsername(const std::string& username, std::string& error){
         error = "Username length must be between 5 and 15 characters.";
         return false;
     }
-//    if () { //если пользователь с таким именем уже есть в БД
-//        error = "Registration failed. Username is already in use.";
-//        return false;
-//    }
+    if(_db.UserExists(username)){
+        error = "Username is already in use.";
+        return false;
+    }
     return true;
 }

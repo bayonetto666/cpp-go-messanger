@@ -13,7 +13,7 @@
 
 
 #include "Hasher.hpp"
-
+#include "DBClient"
 
 class Auth {
 public:
@@ -28,6 +28,8 @@ public:
 private:
     using traits = jwt::traits::nlohmann_json;
     using claim = jwt::basic_claim<traits>;
+
+    DBClient _db;
 
     std::string _secretKey;
     

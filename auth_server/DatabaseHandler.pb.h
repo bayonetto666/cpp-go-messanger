@@ -224,6 +224,7 @@ class InsertUserRequest final :
   enum : int {
     kUsernameFieldNumber = 1,
     kPasswordFieldNumber = 2,
+    kSaltFieldNumber = 3,
   };
   // string username = 1;
   void clear_username() ;
@@ -265,6 +266,26 @@ class InsertUserRequest final :
   std::string* _internal_mutable_password();
 
   public:
+  // string salt = 3;
+  void clear_salt() ;
+  const std::string& salt() const;
+
+
+
+
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_salt(Arg_&& arg, Args_... args);
+  std::string* mutable_salt();
+  PROTOBUF_NODISCARD std::string* release_salt();
+  void set_allocated_salt(std::string* ptr);
+
+  private:
+  const std::string& _internal_salt() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_salt(
+      const std::string& value);
+  std::string* _internal_mutable_salt();
+
+  public:
   // @@protoc_insertion_point(class_scope:InsertUserRequest)
  private:
   class _Internal;
@@ -275,6 +296,7 @@ class InsertUserRequest final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr username_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr password_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr salt_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -1437,6 +1459,53 @@ inline void InsertUserRequest::set_allocated_password(std::string* value) {
         }
   #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   // @@protoc_insertion_point(field_set_allocated:InsertUserRequest.password)
+}
+
+// string salt = 3;
+inline void InsertUserRequest::clear_salt() {
+  _impl_.salt_.ClearToEmpty();
+}
+inline const std::string& InsertUserRequest::salt() const {
+  // @@protoc_insertion_point(field_get:InsertUserRequest.salt)
+  return _internal_salt();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void InsertUserRequest::set_salt(Arg_&& arg,
+                                                     Args_... args) {
+  ;
+  _impl_.salt_.Set(static_cast<Arg_&&>(arg), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:InsertUserRequest.salt)
+}
+inline std::string* InsertUserRequest::mutable_salt() {
+  std::string* _s = _internal_mutable_salt();
+  // @@protoc_insertion_point(field_mutable:InsertUserRequest.salt)
+  return _s;
+}
+inline const std::string& InsertUserRequest::_internal_salt() const {
+  return _impl_.salt_.Get();
+}
+inline void InsertUserRequest::_internal_set_salt(const std::string& value) {
+  ;
+
+
+  _impl_.salt_.Set(value, GetArenaForAllocation());
+}
+inline std::string* InsertUserRequest::_internal_mutable_salt() {
+  ;
+  return _impl_.salt_.Mutable( GetArenaForAllocation());
+}
+inline std::string* InsertUserRequest::release_salt() {
+  // @@protoc_insertion_point(field_release:InsertUserRequest.salt)
+  return _impl_.salt_.Release();
+}
+inline void InsertUserRequest::set_allocated_salt(std::string* value) {
+  _impl_.salt_.SetAllocated(value, GetArenaForAllocation());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        if (_impl_.salt_.IsDefault()) {
+          _impl_.salt_.Set("", GetArenaForAllocation());
+        }
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:InsertUserRequest.salt)
 }
 
 // -------------------------------------------------------------------

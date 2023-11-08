@@ -87,10 +87,14 @@ public:
     return grpc::Status::OK;
 }
 
-    grpc::Status GetMessages(::grpc::ServerContext* context, const ::GetMessagesRequset* request, ::grpc::ServerWriter< ::Message>* writer) override {
+    grpc::Status GetMessages(::grpc::ServerContext* context, const ::GetMessagesRequest* request, ::grpc::ServerWriter< ::Message>* writer) override {
+        /*
+            *Не работает(проблема с json)
+            *После вызова dbh.getMessages сообщения помечаються как "прочитанные",
+            при том что на клиент они могут так и не попасть
+        */
+        
         std::string error;
-
-        // Retrieve the messages from the database.
         nlohmann::json messages = dbh.getMessages(request->user(), error);
 
         if (!error.empty()) {
@@ -111,6 +115,21 @@ public:
                 return grpc::Status(grpc::StatusCode::UNKNOWN, "Failed to write messages to the client");
             }
         }
+
+        return grpc::Status::OK;
+    }
+
+   grpc::Status GetPassword(::grpc::ServerContext* context, const ::GetPasswordRequest* request, ::GetPasswordResponse* response) 
+   override {
+        std::string error;
+        auto password_data = dbh.getPassword(request->username(), error);
+        if (!error.empty())
+        {
+            return grpc::Status(grpc::StatusCode::UNKNOWN, "Failed to get password data: " + error);
+        }
+        
+        response->set_hashed_password(password_data.first);
+        response->set_salt(password_data.second);
 
         return grpc::Status::OK;
     }

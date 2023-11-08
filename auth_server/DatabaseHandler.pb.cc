@@ -29,6 +29,10 @@ PROTOBUF_CONSTEXPR InsertUserRequest::InsertUserRequest(
     &::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized {}
   }
 
+  , /*decltype(_impl_.salt_)*/ {
+    &::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized {}
+  }
+
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct InsertUserRequestDefaultTypeInternal {
   PROTOBUF_CONSTEXPR InsertUserRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
@@ -175,6 +179,7 @@ const ::uint32_t TableStruct_DatabaseHandler_2eproto::offsets[] PROTOBUF_SECTION
     ~0u,  // no sizeof(Split)
     PROTOBUF_FIELD_OFFSET(::InsertUserRequest, _impl_.username_),
     PROTOBUF_FIELD_OFFSET(::InsertUserRequest, _impl_.password_),
+    PROTOBUF_FIELD_OFFSET(::InsertUserRequest, _impl_.salt_),
     ~0u,  // no _has_bits_
     PROTOBUF_FIELD_OFFSET(::InsertUserResponse, _internal_metadata_),
     ~0u,  // no _extensions_
@@ -238,12 +243,12 @@ const ::uint32_t TableStruct_DatabaseHandler_2eproto::offsets[] PROTOBUF_SECTION
 static const ::_pbi::MigrationSchema
     schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
         { 0, -1, -1, sizeof(::InsertUserRequest)},
-        { 10, -1, -1, sizeof(::InsertUserResponse)},
-        { 20, -1, -1, sizeof(::StoreMessageResponse)},
-        { 30, -1, -1, sizeof(::Message)},
-        { 41, -1, -1, sizeof(::GetMessagesRequset)},
-        { 50, -1, -1, sizeof(::UserExistsRequest)},
-        { 59, -1, -1, sizeof(::UserExistsResponse)},
+        { 11, -1, -1, sizeof(::InsertUserResponse)},
+        { 21, -1, -1, sizeof(::StoreMessageResponse)},
+        { 31, -1, -1, sizeof(::Message)},
+        { 42, -1, -1, sizeof(::GetMessagesRequset)},
+        { 51, -1, -1, sizeof(::UserExistsRequest)},
+        { 60, -1, -1, sizeof(::UserExistsResponse)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -256,27 +261,28 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::_UserExistsResponse_default_instance_._instance,
 };
 const char descriptor_table_protodef_DatabaseHandler_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-    "\n\025DatabaseHandler.proto\"7\n\021InsertUserReq"
+    "\n\025DatabaseHandler.proto\"E\n\021InsertUserReq"
     "uest\022\020\n\010username\030\001 \001(\t\022\020\n\010password\030\002 \001(\t"
-    "\"4\n\022InsertUserResponse\022\017\n\007success\030\001 \001(\010\022"
-    "\r\n\005error\030\002 \001(\t\"6\n\024StoreMessageResponse\022\017"
-    "\n\007success\030\001 \001(\010\022\r\n\005error\030\002 \001(\t\":\n\007Messag"
-    "e\022\016\n\006sender\030\001 \001(\t\022\021\n\trecipient\030\002 \001(\t\022\014\n\004"
-    "text\030\003 \001(\t\"\"\n\022GetMessagesRequset\022\014\n\004user"
-    "\030\001 \001(\t\"!\n\021UserExistsRequest\022\014\n\004user\030\001 \001("
-    "\t\"$\n\022UserExistsResponse\022\016\n\006exists\030\001 \001(\0102"
-    "\341\001\n\010Database\0227\n\nInsertUser\022\022.InsertUserR"
-    "equest\032\023.InsertUserResponse\"\000\0227\n\nUserExi"
-    "sts\022\022.UserExistsRequest\032\023.UserExistsResp"
-    "onse\"\000\0221\n\014StoreMessage\022\010.Message\032\025.Store"
-    "MessageResponse\"\000\0220\n\013GetMessages\022\023.GetMe"
-    "ssagesRequset\032\010.Message\"\0000\001b\006proto3"
+    "\022\014\n\004salt\030\003 \001(\t\"4\n\022InsertUserResponse\022\017\n\007"
+    "success\030\001 \001(\010\022\r\n\005error\030\002 \001(\t\"6\n\024StoreMes"
+    "sageResponse\022\017\n\007success\030\001 \001(\010\022\r\n\005error\030\002"
+    " \001(\t\":\n\007Message\022\016\n\006sender\030\001 \001(\t\022\021\n\trecip"
+    "ient\030\002 \001(\t\022\014\n\004text\030\003 \001(\t\"\"\n\022GetMessagesR"
+    "equset\022\014\n\004user\030\001 \001(\t\"!\n\021UserExistsReques"
+    "t\022\014\n\004user\030\001 \001(\t\"$\n\022UserExistsResponse\022\016\n"
+    "\006exists\030\001 \001(\0102\341\001\n\010Database\0227\n\nInsertUser"
+    "\022\022.InsertUserRequest\032\023.InsertUserRespons"
+    "e\"\000\0227\n\nUserExists\022\022.UserExistsRequest\032\023."
+    "UserExistsResponse\"\000\0221\n\014StoreMessage\022\010.M"
+    "essage\032\025.StoreMessageResponse\"\000\0220\n\013GetMe"
+    "ssages\022\023.GetMessagesRequset\032\010.Message\"\0000"
+    "\001b\006proto3"
 };
 static ::absl::once_flag descriptor_table_DatabaseHandler_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_DatabaseHandler_2eproto = {
     false,
     false,
-    595,
+    609,
     descriptor_table_protodef_DatabaseHandler_2eproto,
     "DatabaseHandler.proto",
     &descriptor_table_DatabaseHandler_2eproto_once,
@@ -327,6 +333,8 @@ InsertUserRequest::InsertUserRequest(const InsertUserRequest& from)
 
     , decltype(_impl_.password_) {}
 
+    , decltype(_impl_.salt_) {}
+
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
@@ -344,6 +352,13 @@ InsertUserRequest::InsertUserRequest(const InsertUserRequest& from)
   if (!from._internal_password().empty()) {
     _this->_impl_.password_.Set(from._internal_password(), _this->GetArenaForAllocation());
   }
+  _impl_.salt_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        _impl_.salt_.Set("", GetArenaForAllocation());
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_salt().empty()) {
+    _this->_impl_.salt_.Set(from._internal_salt(), _this->GetArenaForAllocation());
+  }
   // @@protoc_insertion_point(copy_constructor:InsertUserRequest)
 }
 
@@ -354,6 +369,8 @@ inline void InsertUserRequest::SharedCtor(::_pb::Arena* arena) {
 
     , decltype(_impl_.password_) {}
 
+    , decltype(_impl_.salt_) {}
+
     , /*decltype(_impl_._cached_size_)*/{}
   };
   _impl_.username_.InitDefault();
@@ -363,6 +380,10 @@ inline void InsertUserRequest::SharedCtor(::_pb::Arena* arena) {
   _impl_.password_.InitDefault();
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
         _impl_.password_.Set("", GetArenaForAllocation());
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.salt_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        _impl_.salt_.Set("", GetArenaForAllocation());
   #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
@@ -379,6 +400,7 @@ inline void InsertUserRequest::SharedDtor() {
   ABSL_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.username_.Destroy();
   _impl_.password_.Destroy();
+  _impl_.salt_.Destroy();
 }
 
 void InsertUserRequest::SetCachedSize(int size) const {
@@ -393,6 +415,7 @@ void InsertUserRequest::Clear() {
 
   _impl_.username_.ClearToEmpty();
   _impl_.password_.ClearToEmpty();
+  _impl_.salt_.ClearToEmpty();
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -420,6 +443,17 @@ const char* InsertUserRequest::_InternalParse(const char* ptr, ::_pbi::ParseCont
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
           CHK_(::_pbi::VerifyUTF8(str, "InsertUserRequest.password"));
+        } else {
+          goto handle_unusual;
+        }
+        continue;
+      // string salt = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::uint8_t>(tag) == 26)) {
+          auto str = _internal_mutable_salt();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "InsertUserRequest.salt"));
         } else {
           goto handle_unusual;
         }
@@ -469,6 +503,14 @@ failure:
     target = stream->WriteStringMaybeAliased(2, _s, target);
   }
 
+  // string salt = 3;
+  if (!this->_internal_salt().empty()) {
+    const std::string& _s = this->_internal_salt();
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE, "InsertUserRequest.salt");
+    target = stream->WriteStringMaybeAliased(3, _s, target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -497,6 +539,12 @@ failure:
                                     this->_internal_password());
   }
 
+  // string salt = 3;
+  if (!this->_internal_salt().empty()) {
+    total_size += 1 + ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+                                    this->_internal_salt());
+  }
+
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
@@ -521,6 +569,9 @@ void InsertUserRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, cons
   if (!from._internal_password().empty()) {
     _this->_internal_set_password(from._internal_password());
   }
+  if (!from._internal_salt().empty()) {
+    _this->_internal_set_salt(from._internal_salt());
+  }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -544,6 +595,8 @@ void InsertUserRequest::InternalSwap(InsertUserRequest* other) {
                                        &other->_impl_.username_, rhs_arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.password_, lhs_arena,
                                        &other->_impl_.password_, rhs_arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.salt_, lhs_arena,
+                                       &other->_impl_.salt_, rhs_arena);
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata InsertUserRequest::GetMetadata() const {

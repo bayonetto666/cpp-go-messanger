@@ -23,7 +23,7 @@ message Message {
   string text = 3;
 }
 
-message GetMessagesRequset{
+message GetMessagesRequest{
     string user = 1;
 }
 
@@ -35,10 +35,20 @@ message UserExistsResponse{
     bool exists = 1;
 }
 
+message GetPasswordRequest{
+    string username = 1;
+}
+
+message GetPasswordResponse{
+  string hashed_password = 1;
+  string salt = 2;
+}
+
 service Database {
   // Define your RPC methods here.
   rpc InsertUser(InsertUserRequest) returns (InsertUserResponse) {};
   rpc UserExists (UserExistsRequest) returns (UserExistsResponse) {};
   rpc StoreMessage(Message) returns (StoreMessageResponse) {};
-  rpc GetMessages(GetMessagesRequset) returns (stream Message) {};
+  rpc GetMessages(GetMessagesRequest) returns (stream Message) {};
+  rpc GetPassword (GetPasswordRequest) returns (GetPasswordResponse) {};
 }

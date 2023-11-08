@@ -50,9 +50,15 @@ struct TableStruct_DatabaseHandler_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable
     descriptor_table_DatabaseHandler_2eproto;
-class GetMessagesRequset;
-struct GetMessagesRequsetDefaultTypeInternal;
-extern GetMessagesRequsetDefaultTypeInternal _GetMessagesRequset_default_instance_;
+class GetMessagesRequest;
+struct GetMessagesRequestDefaultTypeInternal;
+extern GetMessagesRequestDefaultTypeInternal _GetMessagesRequest_default_instance_;
+class GetPasswordRequest;
+struct GetPasswordRequestDefaultTypeInternal;
+extern GetPasswordRequestDefaultTypeInternal _GetPasswordRequest_default_instance_;
+class GetPasswordResponse;
+struct GetPasswordResponseDefaultTypeInternal;
+extern GetPasswordResponseDefaultTypeInternal _GetPasswordResponse_default_instance_;
 class InsertUserRequest;
 struct InsertUserRequestDefaultTypeInternal;
 extern InsertUserRequestDefaultTypeInternal _InsertUserRequest_default_instance_;
@@ -73,7 +79,11 @@ struct UserExistsResponseDefaultTypeInternal;
 extern UserExistsResponseDefaultTypeInternal _UserExistsResponse_default_instance_;
 PROTOBUF_NAMESPACE_OPEN
 template <>
-::GetMessagesRequset* Arena::CreateMaybeMessage<::GetMessagesRequset>(Arena*);
+::GetMessagesRequest* Arena::CreateMaybeMessage<::GetMessagesRequest>(Arena*);
+template <>
+::GetPasswordRequest* Arena::CreateMaybeMessage<::GetPasswordRequest>(Arena*);
+template <>
+::GetPasswordResponse* Arena::CreateMaybeMessage<::GetPasswordResponse>(Arena*);
 template <>
 ::InsertUserRequest* Arena::CreateMaybeMessage<::InsertUserRequest>(Arena*);
 template <>
@@ -866,25 +876,25 @@ class Message final :
   friend struct ::TableStruct_DatabaseHandler_2eproto;
 };// -------------------------------------------------------------------
 
-class GetMessagesRequset final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:GetMessagesRequset) */ {
+class GetMessagesRequest final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:GetMessagesRequest) */ {
  public:
-  inline GetMessagesRequset() : GetMessagesRequset(nullptr) {}
-  ~GetMessagesRequset() override;
+  inline GetMessagesRequest() : GetMessagesRequest(nullptr) {}
+  ~GetMessagesRequest() override;
   template<typename = void>
-  explicit PROTOBUF_CONSTEXPR GetMessagesRequset(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  explicit PROTOBUF_CONSTEXPR GetMessagesRequest(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  GetMessagesRequset(const GetMessagesRequset& from);
-  GetMessagesRequset(GetMessagesRequset&& from) noexcept
-    : GetMessagesRequset() {
+  GetMessagesRequest(const GetMessagesRequest& from);
+  GetMessagesRequest(GetMessagesRequest&& from) noexcept
+    : GetMessagesRequest() {
     *this = ::std::move(from);
   }
 
-  inline GetMessagesRequset& operator=(const GetMessagesRequset& from) {
+  inline GetMessagesRequest& operator=(const GetMessagesRequest& from) {
     CopyFrom(from);
     return *this;
   }
-  inline GetMessagesRequset& operator=(GetMessagesRequset&& from) noexcept {
+  inline GetMessagesRequest& operator=(GetMessagesRequest&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()
   #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
@@ -914,20 +924,20 @@ class GetMessagesRequset final :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const GetMessagesRequset& default_instance() {
+  static const GetMessagesRequest& default_instance() {
     return *internal_default_instance();
   }
-  static inline const GetMessagesRequset* internal_default_instance() {
-    return reinterpret_cast<const GetMessagesRequset*>(
-               &_GetMessagesRequset_default_instance_);
+  static inline const GetMessagesRequest* internal_default_instance() {
+    return reinterpret_cast<const GetMessagesRequest*>(
+               &_GetMessagesRequest_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     4;
 
-  friend void swap(GetMessagesRequset& a, GetMessagesRequset& b) {
+  friend void swap(GetMessagesRequest& a, GetMessagesRequest& b) {
     a.Swap(&b);
   }
-  inline void Swap(GetMessagesRequset* other) {
+  inline void Swap(GetMessagesRequest* other) {
     if (other == this) return;
   #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
     if (GetOwningArena() != nullptr &&
@@ -940,7 +950,7 @@ class GetMessagesRequset final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(GetMessagesRequset* other) {
+  void UnsafeArenaSwap(GetMessagesRequest* other) {
     if (other == this) return;
     ABSL_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -948,14 +958,14 @@ class GetMessagesRequset final :
 
   // implements Message ----------------------------------------------
 
-  GetMessagesRequset* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<GetMessagesRequset>(arena);
+  GetMessagesRequest* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<GetMessagesRequest>(arena);
   }
   using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const GetMessagesRequset& from);
+  void CopyFrom(const GetMessagesRequest& from);
   using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const GetMessagesRequset& from) {
-    GetMessagesRequset::MergeImpl(*this, from);
+  void MergeFrom( const GetMessagesRequest& from) {
+    GetMessagesRequest::MergeImpl(*this, from);
   }
   private:
   static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
@@ -973,15 +983,15 @@ class GetMessagesRequset final :
   void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(GetMessagesRequset* other);
+  void InternalSwap(GetMessagesRequest* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::absl::string_view FullMessageName() {
-    return "GetMessagesRequset";
+    return "GetMessagesRequest";
   }
   protected:
-  explicit GetMessagesRequset(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  explicit GetMessagesRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena);
   public:
 
   static const ClassData _class_data_;
@@ -1016,7 +1026,7 @@ class GetMessagesRequset final :
   std::string* _internal_mutable_user();
 
   public:
-  // @@protoc_insertion_point(class_scope:GetMessagesRequset)
+  // @@protoc_insertion_point(class_scope:GetMessagesRequest)
  private:
   class _Internal;
 
@@ -1345,6 +1355,358 @@ class UserExistsResponse final :
   typedef void DestructorSkippable_;
   struct Impl_ {
     bool exists_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_DatabaseHandler_2eproto;
+};// -------------------------------------------------------------------
+
+class GetPasswordRequest final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:GetPasswordRequest) */ {
+ public:
+  inline GetPasswordRequest() : GetPasswordRequest(nullptr) {}
+  ~GetPasswordRequest() override;
+  template<typename = void>
+  explicit PROTOBUF_CONSTEXPR GetPasswordRequest(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  GetPasswordRequest(const GetPasswordRequest& from);
+  GetPasswordRequest(GetPasswordRequest&& from) noexcept
+    : GetPasswordRequest() {
+    *this = ::std::move(from);
+  }
+
+  inline GetPasswordRequest& operator=(const GetPasswordRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline GetPasswordRequest& operator=(GetPasswordRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance);
+  }
+  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const GetPasswordRequest& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const GetPasswordRequest* internal_default_instance() {
+    return reinterpret_cast<const GetPasswordRequest*>(
+               &_GetPasswordRequest_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    7;
+
+  friend void swap(GetPasswordRequest& a, GetPasswordRequest& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(GetPasswordRequest* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(GetPasswordRequest* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  GetPasswordRequest* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<GetPasswordRequest>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const GetPasswordRequest& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const GetPasswordRequest& from) {
+    GetPasswordRequest::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  ::size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(GetPasswordRequest* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::absl::string_view FullMessageName() {
+    return "GetPasswordRequest";
+  }
+  protected:
+  explicit GetPasswordRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kUsernameFieldNumber = 1,
+  };
+  // string username = 1;
+  void clear_username() ;
+  const std::string& username() const;
+
+
+
+
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_username(Arg_&& arg, Args_... args);
+  std::string* mutable_username();
+  PROTOBUF_NODISCARD std::string* release_username();
+  void set_allocated_username(std::string* ptr);
+
+  private:
+  const std::string& _internal_username() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_username(
+      const std::string& value);
+  std::string* _internal_mutable_username();
+
+  public:
+  // @@protoc_insertion_point(class_scope:GetPasswordRequest)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr username_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_DatabaseHandler_2eproto;
+};// -------------------------------------------------------------------
+
+class GetPasswordResponse final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:GetPasswordResponse) */ {
+ public:
+  inline GetPasswordResponse() : GetPasswordResponse(nullptr) {}
+  ~GetPasswordResponse() override;
+  template<typename = void>
+  explicit PROTOBUF_CONSTEXPR GetPasswordResponse(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  GetPasswordResponse(const GetPasswordResponse& from);
+  GetPasswordResponse(GetPasswordResponse&& from) noexcept
+    : GetPasswordResponse() {
+    *this = ::std::move(from);
+  }
+
+  inline GetPasswordResponse& operator=(const GetPasswordResponse& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline GetPasswordResponse& operator=(GetPasswordResponse&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  inline const ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance);
+  }
+  inline ::PROTOBUF_NAMESPACE_ID::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const GetPasswordResponse& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const GetPasswordResponse* internal_default_instance() {
+    return reinterpret_cast<const GetPasswordResponse*>(
+               &_GetPasswordResponse_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    8;
+
+  friend void swap(GetPasswordResponse& a, GetPasswordResponse& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(GetPasswordResponse* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(GetPasswordResponse* other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  GetPasswordResponse* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<GetPasswordResponse>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const GetPasswordResponse& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const GetPasswordResponse& from) {
+    GetPasswordResponse::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  ::size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  ::uint8_t* _InternalSerialize(
+      ::uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(GetPasswordResponse* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::absl::string_view FullMessageName() {
+    return "GetPasswordResponse";
+  }
+  protected:
+  explicit GetPasswordResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kHashedPasswordFieldNumber = 1,
+    kSaltFieldNumber = 2,
+  };
+  // string hashed_password = 1;
+  void clear_hashed_password() ;
+  const std::string& hashed_password() const;
+
+
+
+
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_hashed_password(Arg_&& arg, Args_... args);
+  std::string* mutable_hashed_password();
+  PROTOBUF_NODISCARD std::string* release_hashed_password();
+  void set_allocated_hashed_password(std::string* ptr);
+
+  private:
+  const std::string& _internal_hashed_password() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_hashed_password(
+      const std::string& value);
+  std::string* _internal_mutable_hashed_password();
+
+  public:
+  // string salt = 2;
+  void clear_salt() ;
+  const std::string& salt() const;
+
+
+
+
+  template <typename Arg_ = const std::string&, typename... Args_>
+  void set_salt(Arg_&& arg, Args_... args);
+  std::string* mutable_salt();
+  PROTOBUF_NODISCARD std::string* release_salt();
+  void set_allocated_salt(std::string* ptr);
+
+  private:
+  const std::string& _internal_salt() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_salt(
+      const std::string& value);
+  std::string* _internal_mutable_salt();
+
+  public:
+  // @@protoc_insertion_point(class_scope:GetPasswordResponse)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr hashed_password_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr salt_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -1797,53 +2159,53 @@ inline void Message::set_allocated_text(std::string* value) {
 
 // -------------------------------------------------------------------
 
-// GetMessagesRequset
+// GetMessagesRequest
 
 // string user = 1;
-inline void GetMessagesRequset::clear_user() {
+inline void GetMessagesRequest::clear_user() {
   _impl_.user_.ClearToEmpty();
 }
-inline const std::string& GetMessagesRequset::user() const {
-  // @@protoc_insertion_point(field_get:GetMessagesRequset.user)
+inline const std::string& GetMessagesRequest::user() const {
+  // @@protoc_insertion_point(field_get:GetMessagesRequest.user)
   return _internal_user();
 }
 template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void GetMessagesRequset::set_user(Arg_&& arg,
+inline PROTOBUF_ALWAYS_INLINE void GetMessagesRequest::set_user(Arg_&& arg,
                                                      Args_... args) {
   ;
   _impl_.user_.Set(static_cast<Arg_&&>(arg), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:GetMessagesRequset.user)
+  // @@protoc_insertion_point(field_set:GetMessagesRequest.user)
 }
-inline std::string* GetMessagesRequset::mutable_user() {
+inline std::string* GetMessagesRequest::mutable_user() {
   std::string* _s = _internal_mutable_user();
-  // @@protoc_insertion_point(field_mutable:GetMessagesRequset.user)
+  // @@protoc_insertion_point(field_mutable:GetMessagesRequest.user)
   return _s;
 }
-inline const std::string& GetMessagesRequset::_internal_user() const {
+inline const std::string& GetMessagesRequest::_internal_user() const {
   return _impl_.user_.Get();
 }
-inline void GetMessagesRequset::_internal_set_user(const std::string& value) {
+inline void GetMessagesRequest::_internal_set_user(const std::string& value) {
   ;
 
 
   _impl_.user_.Set(value, GetArenaForAllocation());
 }
-inline std::string* GetMessagesRequset::_internal_mutable_user() {
+inline std::string* GetMessagesRequest::_internal_mutable_user() {
   ;
   return _impl_.user_.Mutable( GetArenaForAllocation());
 }
-inline std::string* GetMessagesRequset::release_user() {
-  // @@protoc_insertion_point(field_release:GetMessagesRequset.user)
+inline std::string* GetMessagesRequest::release_user() {
+  // @@protoc_insertion_point(field_release:GetMessagesRequest.user)
   return _impl_.user_.Release();
 }
-inline void GetMessagesRequset::set_allocated_user(std::string* value) {
+inline void GetMessagesRequest::set_allocated_user(std::string* value) {
   _impl_.user_.SetAllocated(value, GetArenaForAllocation());
   #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
         if (_impl_.user_.IsDefault()) {
           _impl_.user_.Set("", GetArenaForAllocation());
         }
   #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:GetMessagesRequset.user)
+  // @@protoc_insertion_point(field_set_allocated:GetMessagesRequest.user)
 }
 
 // -------------------------------------------------------------------
@@ -1919,6 +2281,155 @@ inline bool UserExistsResponse::_internal_exists() const {
 inline void UserExistsResponse::_internal_set_exists(bool value) {
   ;
   _impl_.exists_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// GetPasswordRequest
+
+// string username = 1;
+inline void GetPasswordRequest::clear_username() {
+  _impl_.username_.ClearToEmpty();
+}
+inline const std::string& GetPasswordRequest::username() const {
+  // @@protoc_insertion_point(field_get:GetPasswordRequest.username)
+  return _internal_username();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void GetPasswordRequest::set_username(Arg_&& arg,
+                                                     Args_... args) {
+  ;
+  _impl_.username_.Set(static_cast<Arg_&&>(arg), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:GetPasswordRequest.username)
+}
+inline std::string* GetPasswordRequest::mutable_username() {
+  std::string* _s = _internal_mutable_username();
+  // @@protoc_insertion_point(field_mutable:GetPasswordRequest.username)
+  return _s;
+}
+inline const std::string& GetPasswordRequest::_internal_username() const {
+  return _impl_.username_.Get();
+}
+inline void GetPasswordRequest::_internal_set_username(const std::string& value) {
+  ;
+
+
+  _impl_.username_.Set(value, GetArenaForAllocation());
+}
+inline std::string* GetPasswordRequest::_internal_mutable_username() {
+  ;
+  return _impl_.username_.Mutable( GetArenaForAllocation());
+}
+inline std::string* GetPasswordRequest::release_username() {
+  // @@protoc_insertion_point(field_release:GetPasswordRequest.username)
+  return _impl_.username_.Release();
+}
+inline void GetPasswordRequest::set_allocated_username(std::string* value) {
+  _impl_.username_.SetAllocated(value, GetArenaForAllocation());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        if (_impl_.username_.IsDefault()) {
+          _impl_.username_.Set("", GetArenaForAllocation());
+        }
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:GetPasswordRequest.username)
+}
+
+// -------------------------------------------------------------------
+
+// GetPasswordResponse
+
+// string hashed_password = 1;
+inline void GetPasswordResponse::clear_hashed_password() {
+  _impl_.hashed_password_.ClearToEmpty();
+}
+inline const std::string& GetPasswordResponse::hashed_password() const {
+  // @@protoc_insertion_point(field_get:GetPasswordResponse.hashed_password)
+  return _internal_hashed_password();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void GetPasswordResponse::set_hashed_password(Arg_&& arg,
+                                                     Args_... args) {
+  ;
+  _impl_.hashed_password_.Set(static_cast<Arg_&&>(arg), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:GetPasswordResponse.hashed_password)
+}
+inline std::string* GetPasswordResponse::mutable_hashed_password() {
+  std::string* _s = _internal_mutable_hashed_password();
+  // @@protoc_insertion_point(field_mutable:GetPasswordResponse.hashed_password)
+  return _s;
+}
+inline const std::string& GetPasswordResponse::_internal_hashed_password() const {
+  return _impl_.hashed_password_.Get();
+}
+inline void GetPasswordResponse::_internal_set_hashed_password(const std::string& value) {
+  ;
+
+
+  _impl_.hashed_password_.Set(value, GetArenaForAllocation());
+}
+inline std::string* GetPasswordResponse::_internal_mutable_hashed_password() {
+  ;
+  return _impl_.hashed_password_.Mutable( GetArenaForAllocation());
+}
+inline std::string* GetPasswordResponse::release_hashed_password() {
+  // @@protoc_insertion_point(field_release:GetPasswordResponse.hashed_password)
+  return _impl_.hashed_password_.Release();
+}
+inline void GetPasswordResponse::set_allocated_hashed_password(std::string* value) {
+  _impl_.hashed_password_.SetAllocated(value, GetArenaForAllocation());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        if (_impl_.hashed_password_.IsDefault()) {
+          _impl_.hashed_password_.Set("", GetArenaForAllocation());
+        }
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:GetPasswordResponse.hashed_password)
+}
+
+// string salt = 2;
+inline void GetPasswordResponse::clear_salt() {
+  _impl_.salt_.ClearToEmpty();
+}
+inline const std::string& GetPasswordResponse::salt() const {
+  // @@protoc_insertion_point(field_get:GetPasswordResponse.salt)
+  return _internal_salt();
+}
+template <typename Arg_, typename... Args_>
+inline PROTOBUF_ALWAYS_INLINE void GetPasswordResponse::set_salt(Arg_&& arg,
+                                                     Args_... args) {
+  ;
+  _impl_.salt_.Set(static_cast<Arg_&&>(arg), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:GetPasswordResponse.salt)
+}
+inline std::string* GetPasswordResponse::mutable_salt() {
+  std::string* _s = _internal_mutable_salt();
+  // @@protoc_insertion_point(field_mutable:GetPasswordResponse.salt)
+  return _s;
+}
+inline const std::string& GetPasswordResponse::_internal_salt() const {
+  return _impl_.salt_.Get();
+}
+inline void GetPasswordResponse::_internal_set_salt(const std::string& value) {
+  ;
+
+
+  _impl_.salt_.Set(value, GetArenaForAllocation());
+}
+inline std::string* GetPasswordResponse::_internal_mutable_salt() {
+  ;
+  return _impl_.salt_.Mutable( GetArenaForAllocation());
+}
+inline std::string* GetPasswordResponse::release_salt() {
+  // @@protoc_insertion_point(field_release:GetPasswordResponse.salt)
+  return _impl_.salt_.Release();
+}
+inline void GetPasswordResponse::set_allocated_salt(std::string* value) {
+  _impl_.salt_.SetAllocated(value, GetArenaForAllocation());
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        if (_impl_.salt_.IsDefault()) {
+          _impl_.salt_.Set("", GetArenaForAllocation());
+        }
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:GetPasswordResponse.salt)
 }
 
 #ifdef __GNUC__
