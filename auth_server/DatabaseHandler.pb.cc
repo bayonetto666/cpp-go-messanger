@@ -111,23 +111,23 @@ struct MessageDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 MessageDefaultTypeInternal _Message_default_instance_;
 template <typename>
-PROTOBUF_CONSTEXPR GetMessagesRequset::GetMessagesRequset(
+PROTOBUF_CONSTEXPR GetMessagesRequest::GetMessagesRequest(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.user_)*/ {
     &::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized {}
   }
 
   , /*decltype(_impl_._cached_size_)*/{}} {}
-struct GetMessagesRequsetDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR GetMessagesRequsetDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
-  ~GetMessagesRequsetDefaultTypeInternal() {}
+struct GetMessagesRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR GetMessagesRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~GetMessagesRequestDefaultTypeInternal() {}
   union {
-    GetMessagesRequset _instance;
+    GetMessagesRequest _instance;
   };
 };
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GetMessagesRequsetDefaultTypeInternal _GetMessagesRequset_default_instance_;
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GetMessagesRequestDefaultTypeInternal _GetMessagesRequest_default_instance_;
 template <typename>
 PROTOBUF_CONSTEXPR UserExistsRequest::UserExistsRequest(
     ::_pbi::ConstantInitialized): _impl_{
@@ -162,7 +162,47 @@ struct UserExistsResponseDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 UserExistsResponseDefaultTypeInternal _UserExistsResponse_default_instance_;
-static ::_pb::Metadata file_level_metadata_DatabaseHandler_2eproto[7];
+template <typename>
+PROTOBUF_CONSTEXPR GetPasswordRequest::GetPasswordRequest(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.username_)*/ {
+    &::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized {}
+  }
+
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct GetPasswordRequestDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR GetPasswordRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~GetPasswordRequestDefaultTypeInternal() {}
+  union {
+    GetPasswordRequest _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GetPasswordRequestDefaultTypeInternal _GetPasswordRequest_default_instance_;
+template <typename>
+PROTOBUF_CONSTEXPR GetPasswordResponse::GetPasswordResponse(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.hashed_password_)*/ {
+    &::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized {}
+  }
+
+  , /*decltype(_impl_.salt_)*/ {
+    &::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized {}
+  }
+
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct GetPasswordResponseDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR GetPasswordResponseDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~GetPasswordResponseDefaultTypeInternal() {}
+  union {
+    GetPasswordResponse _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GetPasswordResponseDefaultTypeInternal _GetPasswordResponse_default_instance_;
+static ::_pb::Metadata file_level_metadata_DatabaseHandler_2eproto[9];
 static constexpr const ::_pb::EnumDescriptor**
     file_level_enum_descriptors_DatabaseHandler_2eproto = nullptr;
 static constexpr const ::_pb::ServiceDescriptor**
@@ -212,14 +252,14 @@ const ::uint32_t TableStruct_DatabaseHandler_2eproto::offsets[] PROTOBUF_SECTION
     PROTOBUF_FIELD_OFFSET(::Message, _impl_.recipient_),
     PROTOBUF_FIELD_OFFSET(::Message, _impl_.text_),
     ~0u,  // no _has_bits_
-    PROTOBUF_FIELD_OFFSET(::GetMessagesRequset, _internal_metadata_),
+    PROTOBUF_FIELD_OFFSET(::GetMessagesRequest, _internal_metadata_),
     ~0u,  // no _extensions_
     ~0u,  // no _oneof_case_
     ~0u,  // no _weak_field_map_
     ~0u,  // no _inlined_string_donated_
     ~0u,  // no _split_
     ~0u,  // no sizeof(Split)
-    PROTOBUF_FIELD_OFFSET(::GetMessagesRequset, _impl_.user_),
+    PROTOBUF_FIELD_OFFSET(::GetMessagesRequest, _impl_.user_),
     ~0u,  // no _has_bits_
     PROTOBUF_FIELD_OFFSET(::UserExistsRequest, _internal_metadata_),
     ~0u,  // no _extensions_
@@ -238,6 +278,25 @@ const ::uint32_t TableStruct_DatabaseHandler_2eproto::offsets[] PROTOBUF_SECTION
     ~0u,  // no _split_
     ~0u,  // no sizeof(Split)
     PROTOBUF_FIELD_OFFSET(::UserExistsResponse, _impl_.exists_),
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::GetPasswordRequest, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::GetPasswordRequest, _impl_.username_),
+    ~0u,  // no _has_bits_
+    PROTOBUF_FIELD_OFFSET(::GetPasswordResponse, _internal_metadata_),
+    ~0u,  // no _extensions_
+    ~0u,  // no _oneof_case_
+    ~0u,  // no _weak_field_map_
+    ~0u,  // no _inlined_string_donated_
+    ~0u,  // no _split_
+    ~0u,  // no sizeof(Split)
+    PROTOBUF_FIELD_OFFSET(::GetPasswordResponse, _impl_.hashed_password_),
+    PROTOBUF_FIELD_OFFSET(::GetPasswordResponse, _impl_.salt_),
 };
 
 static const ::_pbi::MigrationSchema
@@ -246,9 +305,11 @@ static const ::_pbi::MigrationSchema
         { 11, -1, -1, sizeof(::InsertUserResponse)},
         { 21, -1, -1, sizeof(::StoreMessageResponse)},
         { 31, -1, -1, sizeof(::Message)},
-        { 42, -1, -1, sizeof(::GetMessagesRequset)},
+        { 42, -1, -1, sizeof(::GetMessagesRequest)},
         { 51, -1, -1, sizeof(::UserExistsRequest)},
         { 60, -1, -1, sizeof(::UserExistsResponse)},
+        { 69, -1, -1, sizeof(::GetPasswordRequest)},
+        { 78, -1, -1, sizeof(::GetPasswordResponse)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -256,9 +317,11 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::_InsertUserResponse_default_instance_._instance,
     &::_StoreMessageResponse_default_instance_._instance,
     &::_Message_default_instance_._instance,
-    &::_GetMessagesRequset_default_instance_._instance,
+    &::_GetMessagesRequest_default_instance_._instance,
     &::_UserExistsRequest_default_instance_._instance,
     &::_UserExistsResponse_default_instance_._instance,
+    &::_GetPasswordRequest_default_instance_._instance,
+    &::_GetPasswordResponse_default_instance_._instance,
 };
 const char descriptor_table_protodef_DatabaseHandler_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
     "\n\025DatabaseHandler.proto\"E\n\021InsertUserReq"
@@ -268,27 +331,31 @@ const char descriptor_table_protodef_DatabaseHandler_2eproto[] PROTOBUF_SECTION_
     "sageResponse\022\017\n\007success\030\001 \001(\010\022\r\n\005error\030\002"
     " \001(\t\":\n\007Message\022\016\n\006sender\030\001 \001(\t\022\021\n\trecip"
     "ient\030\002 \001(\t\022\014\n\004text\030\003 \001(\t\"\"\n\022GetMessagesR"
-    "equset\022\014\n\004user\030\001 \001(\t\"!\n\021UserExistsReques"
+    "equest\022\014\n\004user\030\001 \001(\t\"!\n\021UserExistsReques"
     "t\022\014\n\004user\030\001 \001(\t\"$\n\022UserExistsResponse\022\016\n"
-    "\006exists\030\001 \001(\0102\341\001\n\010Database\0227\n\nInsertUser"
-    "\022\022.InsertUserRequest\032\023.InsertUserRespons"
-    "e\"\000\0227\n\nUserExists\022\022.UserExistsRequest\032\023."
-    "UserExistsResponse\"\000\0221\n\014StoreMessage\022\010.M"
-    "essage\032\025.StoreMessageResponse\"\000\0220\n\013GetMe"
-    "ssages\022\023.GetMessagesRequset\032\010.Message\"\0000"
-    "\001b\006proto3"
+    "\006exists\030\001 \001(\010\"&\n\022GetPasswordRequest\022\020\n\010u"
+    "sername\030\001 \001(\t\"<\n\023GetPasswordResponse\022\027\n\017"
+    "hashed_password\030\001 \001(\t\022\014\n\004salt\030\002 \001(\t2\235\002\n\010"
+    "Database\0227\n\nInsertUser\022\022.InsertUserReque"
+    "st\032\023.InsertUserResponse\"\000\0227\n\nUserExists\022"
+    "\022.UserExistsRequest\032\023.UserExistsResponse"
+    "\"\000\0221\n\014StoreMessage\022\010.Message\032\025.StoreMess"
+    "ageResponse\"\000\0220\n\013GetMessages\022\023.GetMessag"
+    "esRequest\032\010.Message\"\0000\001\022:\n\013GetPassword\022\023"
+    ".GetPasswordRequest\032\024.GetPasswordRespons"
+    "e\"\000b\006proto3"
 };
 static ::absl::once_flag descriptor_table_DatabaseHandler_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_DatabaseHandler_2eproto = {
     false,
     false,
-    609,
+    771,
     descriptor_table_protodef_DatabaseHandler_2eproto,
     "DatabaseHandler.proto",
     &descriptor_table_DatabaseHandler_2eproto_once,
     nullptr,
     0,
-    7,
+    9,
     schemas,
     file_default_instances,
     TableStruct_DatabaseHandler_2eproto::offsets,
@@ -1352,18 +1419,18 @@ void Message::InternalSwap(Message* other) {
 }
 // ===================================================================
 
-class GetMessagesRequset::_Internal {
+class GetMessagesRequest::_Internal {
  public:
 };
 
-GetMessagesRequset::GetMessagesRequset(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+GetMessagesRequest::GetMessagesRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
   SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:GetMessagesRequset)
+  // @@protoc_insertion_point(arena_constructor:GetMessagesRequest)
 }
-GetMessagesRequset::GetMessagesRequset(const GetMessagesRequset& from)
+GetMessagesRequest::GetMessagesRequest(const GetMessagesRequest& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
-  GetMessagesRequset* const _this = this; (void)_this;
+  GetMessagesRequest* const _this = this; (void)_this;
   new (&_impl_) Impl_{
       decltype(_impl_.user_) {}
 
@@ -1377,10 +1444,10 @@ GetMessagesRequset::GetMessagesRequset(const GetMessagesRequset& from)
   if (!from._internal_user().empty()) {
     _this->_impl_.user_.Set(from._internal_user(), _this->GetArenaForAllocation());
   }
-  // @@protoc_insertion_point(copy_constructor:GetMessagesRequset)
+  // @@protoc_insertion_point(copy_constructor:GetMessagesRequest)
 }
 
-inline void GetMessagesRequset::SharedCtor(::_pb::Arena* arena) {
+inline void GetMessagesRequest::SharedCtor(::_pb::Arena* arena) {
   (void)arena;
   new (&_impl_) Impl_{
       decltype(_impl_.user_) {}
@@ -1393,8 +1460,8 @@ inline void GetMessagesRequset::SharedCtor(::_pb::Arena* arena) {
   #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
-GetMessagesRequset::~GetMessagesRequset() {
-  // @@protoc_insertion_point(destructor:GetMessagesRequset)
+GetMessagesRequest::~GetMessagesRequest() {
+  // @@protoc_insertion_point(destructor:GetMessagesRequest)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -1402,17 +1469,17 @@ GetMessagesRequset::~GetMessagesRequset() {
   SharedDtor();
 }
 
-inline void GetMessagesRequset::SharedDtor() {
+inline void GetMessagesRequest::SharedDtor() {
   ABSL_DCHECK(GetArenaForAllocation() == nullptr);
   _impl_.user_.Destroy();
 }
 
-void GetMessagesRequset::SetCachedSize(int size) const {
+void GetMessagesRequest::SetCachedSize(int size) const {
   _impl_._cached_size_.Set(size);
 }
 
-void GetMessagesRequset::Clear() {
-// @@protoc_insertion_point(message_clear_start:GetMessagesRequset)
+void GetMessagesRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:GetMessagesRequest)
   ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -1421,7 +1488,7 @@ void GetMessagesRequset::Clear() {
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
-const char* GetMessagesRequset::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+const char* GetMessagesRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
 #define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
   while (!ctx->Done(&ptr)) {
     ::uint32_t tag;
@@ -1433,7 +1500,7 @@ const char* GetMessagesRequset::_InternalParse(const char* ptr, ::_pbi::ParseCon
           auto str = _internal_mutable_user();
           ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "GetMessagesRequset.user"));
+          CHK_(::_pbi::VerifyUTF8(str, "GetMessagesRequest.user"));
         } else {
           goto handle_unusual;
         }
@@ -1461,9 +1528,9 @@ failure:
 #undef CHK_
 }
 
-::uint8_t* GetMessagesRequset::_InternalSerialize(
+::uint8_t* GetMessagesRequest::_InternalSerialize(
     ::uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:GetMessagesRequset)
+  // @@protoc_insertion_point(serialize_to_array_start:GetMessagesRequest)
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -1471,7 +1538,7 @@ failure:
   if (!this->_internal_user().empty()) {
     const std::string& _s = this->_internal_user();
     ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-        _s.data(), static_cast<int>(_s.length()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE, "GetMessagesRequset.user");
+        _s.data(), static_cast<int>(_s.length()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE, "GetMessagesRequest.user");
     target = stream->WriteStringMaybeAliased(1, _s, target);
   }
 
@@ -1479,12 +1546,12 @@ failure:
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:GetMessagesRequset)
+  // @@protoc_insertion_point(serialize_to_array_end:GetMessagesRequest)
   return target;
 }
 
-::size_t GetMessagesRequset::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:GetMessagesRequset)
+::size_t GetMessagesRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:GetMessagesRequest)
   ::size_t total_size = 0;
 
   ::uint32_t cached_has_bits = 0;
@@ -1500,17 +1567,17 @@ failure:
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData GetMessagesRequset::_class_data_ = {
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData GetMessagesRequest::_class_data_ = {
     ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    GetMessagesRequset::MergeImpl
+    GetMessagesRequest::MergeImpl
 };
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetMessagesRequset::GetClassData() const { return &_class_data_; }
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetMessagesRequest::GetClassData() const { return &_class_data_; }
 
 
-void GetMessagesRequset::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
-  auto* const _this = static_cast<GetMessagesRequset*>(&to_msg);
-  auto& from = static_cast<const GetMessagesRequset&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:GetMessagesRequset)
+void GetMessagesRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<GetMessagesRequest*>(&to_msg);
+  auto& from = static_cast<const GetMessagesRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:GetMessagesRequest)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -1521,18 +1588,18 @@ void GetMessagesRequset::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, con
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
-void GetMessagesRequset::CopyFrom(const GetMessagesRequset& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:GetMessagesRequset)
+void GetMessagesRequest::CopyFrom(const GetMessagesRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:GetMessagesRequest)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool GetMessagesRequset::IsInitialized() const {
+bool GetMessagesRequest::IsInitialized() const {
   return true;
 }
 
-void GetMessagesRequset::InternalSwap(GetMessagesRequset* other) {
+void GetMessagesRequest::InternalSwap(GetMessagesRequest* other) {
   using std::swap;
   auto* lhs_arena = GetArenaForAllocation();
   auto* rhs_arena = other->GetArenaForAllocation();
@@ -1541,7 +1608,7 @@ void GetMessagesRequset::InternalSwap(GetMessagesRequset* other) {
                                        &other->_impl_.user_, rhs_arena);
 }
 
-::PROTOBUF_NAMESPACE_ID::Metadata GetMessagesRequset::GetMetadata() const {
+::PROTOBUF_NAMESPACE_ID::Metadata GetMessagesRequest::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_DatabaseHandler_2eproto_getter, &descriptor_table_DatabaseHandler_2eproto_once,
       file_level_metadata_DatabaseHandler_2eproto[4]);
@@ -1915,6 +1982,445 @@ void UserExistsResponse::InternalSwap(UserExistsResponse* other) {
       &descriptor_table_DatabaseHandler_2eproto_getter, &descriptor_table_DatabaseHandler_2eproto_once,
       file_level_metadata_DatabaseHandler_2eproto[6]);
 }
+// ===================================================================
+
+class GetPasswordRequest::_Internal {
+ public:
+};
+
+GetPasswordRequest::GetPasswordRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:GetPasswordRequest)
+}
+GetPasswordRequest::GetPasswordRequest(const GetPasswordRequest& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  GetPasswordRequest* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.username_) {}
+
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.username_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        _impl_.username_.Set("", GetArenaForAllocation());
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_username().empty()) {
+    _this->_impl_.username_.Set(from._internal_username(), _this->GetArenaForAllocation());
+  }
+  // @@protoc_insertion_point(copy_constructor:GetPasswordRequest)
+}
+
+inline void GetPasswordRequest::SharedCtor(::_pb::Arena* arena) {
+  (void)arena;
+  new (&_impl_) Impl_{
+      decltype(_impl_.username_) {}
+
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+  _impl_.username_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        _impl_.username_.Set("", GetArenaForAllocation());
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+GetPasswordRequest::~GetPasswordRequest() {
+  // @@protoc_insertion_point(destructor:GetPasswordRequest)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void GetPasswordRequest::SharedDtor() {
+  ABSL_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.username_.Destroy();
+}
+
+void GetPasswordRequest::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void GetPasswordRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:GetPasswordRequest)
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.username_.ClearToEmpty();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* GetPasswordRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    ::uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // string username = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_username();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "GetPasswordRequest.username"));
+        } else {
+          goto handle_unusual;
+        }
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+::uint8_t* GetPasswordRequest::_InternalSerialize(
+    ::uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:GetPasswordRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string username = 1;
+  if (!this->_internal_username().empty()) {
+    const std::string& _s = this->_internal_username();
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE, "GetPasswordRequest.username");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:GetPasswordRequest)
+  return target;
+}
+
+::size_t GetPasswordRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:GetPasswordRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // string username = 1;
+  if (!this->_internal_username().empty()) {
+    total_size += 1 + ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+                                    this->_internal_username());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData GetPasswordRequest::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    GetPasswordRequest::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetPasswordRequest::GetClassData() const { return &_class_data_; }
+
+
+void GetPasswordRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<GetPasswordRequest*>(&to_msg);
+  auto& from = static_cast<const GetPasswordRequest&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:GetPasswordRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_username().empty()) {
+    _this->_internal_set_username(from._internal_username());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void GetPasswordRequest::CopyFrom(const GetPasswordRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:GetPasswordRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool GetPasswordRequest::IsInitialized() const {
+  return true;
+}
+
+void GetPasswordRequest::InternalSwap(GetPasswordRequest* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.username_, lhs_arena,
+                                       &other->_impl_.username_, rhs_arena);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata GetPasswordRequest::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_DatabaseHandler_2eproto_getter, &descriptor_table_DatabaseHandler_2eproto_once,
+      file_level_metadata_DatabaseHandler_2eproto[7]);
+}
+// ===================================================================
+
+class GetPasswordResponse::_Internal {
+ public:
+};
+
+GetPasswordResponse::GetPasswordResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena) {
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:GetPasswordResponse)
+}
+GetPasswordResponse::GetPasswordResponse(const GetPasswordResponse& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  GetPasswordResponse* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.hashed_password_) {}
+
+    , decltype(_impl_.salt_) {}
+
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.hashed_password_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        _impl_.hashed_password_.Set("", GetArenaForAllocation());
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_hashed_password().empty()) {
+    _this->_impl_.hashed_password_.Set(from._internal_hashed_password(), _this->GetArenaForAllocation());
+  }
+  _impl_.salt_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        _impl_.salt_.Set("", GetArenaForAllocation());
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_salt().empty()) {
+    _this->_impl_.salt_.Set(from._internal_salt(), _this->GetArenaForAllocation());
+  }
+  // @@protoc_insertion_point(copy_constructor:GetPasswordResponse)
+}
+
+inline void GetPasswordResponse::SharedCtor(::_pb::Arena* arena) {
+  (void)arena;
+  new (&_impl_) Impl_{
+      decltype(_impl_.hashed_password_) {}
+
+    , decltype(_impl_.salt_) {}
+
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+  _impl_.hashed_password_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        _impl_.hashed_password_.Set("", GetArenaForAllocation());
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.salt_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+        _impl_.salt_.Set("", GetArenaForAllocation());
+  #endif  // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+GetPasswordResponse::~GetPasswordResponse() {
+  // @@protoc_insertion_point(destructor:GetPasswordResponse)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void GetPasswordResponse::SharedDtor() {
+  ABSL_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.hashed_password_.Destroy();
+  _impl_.salt_.Destroy();
+}
+
+void GetPasswordResponse::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void GetPasswordResponse::Clear() {
+// @@protoc_insertion_point(message_clear_start:GetPasswordResponse)
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.hashed_password_.ClearToEmpty();
+  _impl_.salt_.ClearToEmpty();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* GetPasswordResponse::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    ::uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // string hashed_password = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_hashed_password();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "GetPasswordResponse.hashed_password"));
+        } else {
+          goto handle_unusual;
+        }
+        continue;
+      // string salt = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::uint8_t>(tag) == 18)) {
+          auto str = _internal_mutable_salt();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "GetPasswordResponse.salt"));
+        } else {
+          goto handle_unusual;
+        }
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+::uint8_t* GetPasswordResponse::_InternalSerialize(
+    ::uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:GetPasswordResponse)
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string hashed_password = 1;
+  if (!this->_internal_hashed_password().empty()) {
+    const std::string& _s = this->_internal_hashed_password();
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE, "GetPasswordResponse.hashed_password");
+    target = stream->WriteStringMaybeAliased(1, _s, target);
+  }
+
+  // string salt = 2;
+  if (!this->_internal_salt().empty()) {
+    const std::string& _s = this->_internal_salt();
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+        _s.data(), static_cast<int>(_s.length()), ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE, "GetPasswordResponse.salt");
+    target = stream->WriteStringMaybeAliased(2, _s, target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:GetPasswordResponse)
+  return target;
+}
+
+::size_t GetPasswordResponse::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:GetPasswordResponse)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // string hashed_password = 1;
+  if (!this->_internal_hashed_password().empty()) {
+    total_size += 1 + ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+                                    this->_internal_hashed_password());
+  }
+
+  // string salt = 2;
+  if (!this->_internal_salt().empty()) {
+    total_size += 1 + ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+                                    this->_internal_salt());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData GetPasswordResponse::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    GetPasswordResponse::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetPasswordResponse::GetClassData() const { return &_class_data_; }
+
+
+void GetPasswordResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<GetPasswordResponse*>(&to_msg);
+  auto& from = static_cast<const GetPasswordResponse&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:GetPasswordResponse)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_hashed_password().empty()) {
+    _this->_internal_set_hashed_password(from._internal_hashed_password());
+  }
+  if (!from._internal_salt().empty()) {
+    _this->_internal_set_salt(from._internal_salt());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void GetPasswordResponse::CopyFrom(const GetPasswordResponse& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:GetPasswordResponse)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool GetPasswordResponse::IsInitialized() const {
+  return true;
+}
+
+void GetPasswordResponse::InternalSwap(GetPasswordResponse* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.hashed_password_, lhs_arena,
+                                       &other->_impl_.hashed_password_, rhs_arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.salt_, lhs_arena,
+                                       &other->_impl_.salt_, rhs_arena);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata GetPasswordResponse::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_DatabaseHandler_2eproto_getter, &descriptor_table_DatabaseHandler_2eproto_once,
+      file_level_metadata_DatabaseHandler_2eproto[8]);
+}
 // @@protoc_insertion_point(namespace_scope)
 PROTOBUF_NAMESPACE_OPEN
 template<> PROTOBUF_NOINLINE ::InsertUserRequest*
@@ -1933,9 +2439,9 @@ template<> PROTOBUF_NOINLINE ::Message*
 Arena::CreateMaybeMessage< ::Message >(Arena* arena) {
   return Arena::CreateMessageInternal< ::Message >(arena);
 }
-template<> PROTOBUF_NOINLINE ::GetMessagesRequset*
-Arena::CreateMaybeMessage< ::GetMessagesRequset >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::GetMessagesRequset >(arena);
+template<> PROTOBUF_NOINLINE ::GetMessagesRequest*
+Arena::CreateMaybeMessage< ::GetMessagesRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::GetMessagesRequest >(arena);
 }
 template<> PROTOBUF_NOINLINE ::UserExistsRequest*
 Arena::CreateMaybeMessage< ::UserExistsRequest >(Arena* arena) {
@@ -1944,6 +2450,14 @@ Arena::CreateMaybeMessage< ::UserExistsRequest >(Arena* arena) {
 template<> PROTOBUF_NOINLINE ::UserExistsResponse*
 Arena::CreateMaybeMessage< ::UserExistsResponse >(Arena* arena) {
   return Arena::CreateMessageInternal< ::UserExistsResponse >(arena);
+}
+template<> PROTOBUF_NOINLINE ::GetPasswordRequest*
+Arena::CreateMaybeMessage< ::GetPasswordRequest >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::GetPasswordRequest >(arena);
+}
+template<> PROTOBUF_NOINLINE ::GetPasswordResponse*
+Arena::CreateMaybeMessage< ::GetPasswordResponse >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::GetPasswordResponse >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 // @@protoc_insertion_point(global_scope)

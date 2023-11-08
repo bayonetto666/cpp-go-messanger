@@ -25,11 +25,11 @@ bool Auth::authUser(const std::string &username, const std::string &password, st
 {
     std::string ec;
 
+    auto password_data = _db.GetPassword(username);
 
-    Hasher::verifyPassword()
+    bool verified = Hasher::verifyPassword(password, password_data.first, password_data.second);
 
-
-    return false;
+    return verified;
 }
 
 bool Auth::registerUser(const std::string& username, const std::string& password,  std::string& error){

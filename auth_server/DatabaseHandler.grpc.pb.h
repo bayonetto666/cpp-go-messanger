@@ -55,14 +55,21 @@ class Database final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::StoreMessageResponse>> PrepareAsyncStoreMessage(::grpc::ClientContext* context, const ::Message& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::StoreMessageResponse>>(PrepareAsyncStoreMessageRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientReaderInterface< ::Message>> GetMessages(::grpc::ClientContext* context, const ::GetMessagesRequset& request) {
+    std::unique_ptr< ::grpc::ClientReaderInterface< ::Message>> GetMessages(::grpc::ClientContext* context, const ::GetMessagesRequest& request) {
       return std::unique_ptr< ::grpc::ClientReaderInterface< ::Message>>(GetMessagesRaw(context, request));
     }
-    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::Message>> AsyncGetMessages(::grpc::ClientContext* context, const ::GetMessagesRequset& request, ::grpc::CompletionQueue* cq, void* tag) {
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::Message>> AsyncGetMessages(::grpc::ClientContext* context, const ::GetMessagesRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
       return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::Message>>(AsyncGetMessagesRaw(context, request, cq, tag));
     }
-    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::Message>> PrepareAsyncGetMessages(::grpc::ClientContext* context, const ::GetMessagesRequset& request, ::grpc::CompletionQueue* cq) {
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::Message>> PrepareAsyncGetMessages(::grpc::ClientContext* context, const ::GetMessagesRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::Message>>(PrepareAsyncGetMessagesRaw(context, request, cq));
+    }
+    virtual ::grpc::Status GetPassword(::grpc::ClientContext* context, const ::GetPasswordRequest& request, ::GetPasswordResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::GetPasswordResponse>> AsyncGetPassword(::grpc::ClientContext* context, const ::GetPasswordRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::GetPasswordResponse>>(AsyncGetPasswordRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::GetPasswordResponse>> PrepareAsyncGetPassword(::grpc::ClientContext* context, const ::GetPasswordRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::GetPasswordResponse>>(PrepareAsyncGetPasswordRaw(context, request, cq));
     }
     class async_interface {
      public:
@@ -74,7 +81,9 @@ class Database final {
       virtual void UserExists(::grpc::ClientContext* context, const ::UserExistsRequest* request, ::UserExistsResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void StoreMessage(::grpc::ClientContext* context, const ::Message* request, ::StoreMessageResponse* response, std::function<void(::grpc::Status)>) = 0;
       virtual void StoreMessage(::grpc::ClientContext* context, const ::Message* request, ::StoreMessageResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void GetMessages(::grpc::ClientContext* context, const ::GetMessagesRequset* request, ::grpc::ClientReadReactor< ::Message>* reactor) = 0;
+      virtual void GetMessages(::grpc::ClientContext* context, const ::GetMessagesRequest* request, ::grpc::ClientReadReactor< ::Message>* reactor) = 0;
+      virtual void GetPassword(::grpc::ClientContext* context, const ::GetPasswordRequest* request, ::GetPasswordResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetPassword(::grpc::ClientContext* context, const ::GetPasswordRequest* request, ::GetPasswordResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -86,9 +95,11 @@ class Database final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::UserExistsResponse>* PrepareAsyncUserExistsRaw(::grpc::ClientContext* context, const ::UserExistsRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::StoreMessageResponse>* AsyncStoreMessageRaw(::grpc::ClientContext* context, const ::Message& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::StoreMessageResponse>* PrepareAsyncStoreMessageRaw(::grpc::ClientContext* context, const ::Message& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientReaderInterface< ::Message>* GetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequset& request) = 0;
-    virtual ::grpc::ClientAsyncReaderInterface< ::Message>* AsyncGetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequset& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
-    virtual ::grpc::ClientAsyncReaderInterface< ::Message>* PrepareAsyncGetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequset& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderInterface< ::Message>* GetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequest& request) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::Message>* AsyncGetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequest& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::Message>* PrepareAsyncGetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::GetPasswordResponse>* AsyncGetPasswordRaw(::grpc::ClientContext* context, const ::GetPasswordRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::GetPasswordResponse>* PrepareAsyncGetPasswordRaw(::grpc::ClientContext* context, const ::GetPasswordRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -114,14 +125,21 @@ class Database final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::StoreMessageResponse>> PrepareAsyncStoreMessage(::grpc::ClientContext* context, const ::Message& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::StoreMessageResponse>>(PrepareAsyncStoreMessageRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientReader< ::Message>> GetMessages(::grpc::ClientContext* context, const ::GetMessagesRequset& request) {
+    std::unique_ptr< ::grpc::ClientReader< ::Message>> GetMessages(::grpc::ClientContext* context, const ::GetMessagesRequest& request) {
       return std::unique_ptr< ::grpc::ClientReader< ::Message>>(GetMessagesRaw(context, request));
     }
-    std::unique_ptr< ::grpc::ClientAsyncReader< ::Message>> AsyncGetMessages(::grpc::ClientContext* context, const ::GetMessagesRequset& request, ::grpc::CompletionQueue* cq, void* tag) {
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::Message>> AsyncGetMessages(::grpc::ClientContext* context, const ::GetMessagesRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
       return std::unique_ptr< ::grpc::ClientAsyncReader< ::Message>>(AsyncGetMessagesRaw(context, request, cq, tag));
     }
-    std::unique_ptr< ::grpc::ClientAsyncReader< ::Message>> PrepareAsyncGetMessages(::grpc::ClientContext* context, const ::GetMessagesRequset& request, ::grpc::CompletionQueue* cq) {
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::Message>> PrepareAsyncGetMessages(::grpc::ClientContext* context, const ::GetMessagesRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncReader< ::Message>>(PrepareAsyncGetMessagesRaw(context, request, cq));
+    }
+    ::grpc::Status GetPassword(::grpc::ClientContext* context, const ::GetPasswordRequest& request, ::GetPasswordResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::GetPasswordResponse>> AsyncGetPassword(::grpc::ClientContext* context, const ::GetPasswordRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::GetPasswordResponse>>(AsyncGetPasswordRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::GetPasswordResponse>> PrepareAsyncGetPassword(::grpc::ClientContext* context, const ::GetPasswordRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::GetPasswordResponse>>(PrepareAsyncGetPasswordRaw(context, request, cq));
     }
     class async final :
       public StubInterface::async_interface {
@@ -132,7 +150,9 @@ class Database final {
       void UserExists(::grpc::ClientContext* context, const ::UserExistsRequest* request, ::UserExistsResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
       void StoreMessage(::grpc::ClientContext* context, const ::Message* request, ::StoreMessageResponse* response, std::function<void(::grpc::Status)>) override;
       void StoreMessage(::grpc::ClientContext* context, const ::Message* request, ::StoreMessageResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GetMessages(::grpc::ClientContext* context, const ::GetMessagesRequset* request, ::grpc::ClientReadReactor< ::Message>* reactor) override;
+      void GetMessages(::grpc::ClientContext* context, const ::GetMessagesRequest* request, ::grpc::ClientReadReactor< ::Message>* reactor) override;
+      void GetPassword(::grpc::ClientContext* context, const ::GetPasswordRequest* request, ::GetPasswordResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetPassword(::grpc::ClientContext* context, const ::GetPasswordRequest* request, ::GetPasswordResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -150,13 +170,16 @@ class Database final {
     ::grpc::ClientAsyncResponseReader< ::UserExistsResponse>* PrepareAsyncUserExistsRaw(::grpc::ClientContext* context, const ::UserExistsRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::StoreMessageResponse>* AsyncStoreMessageRaw(::grpc::ClientContext* context, const ::Message& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::StoreMessageResponse>* PrepareAsyncStoreMessageRaw(::grpc::ClientContext* context, const ::Message& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientReader< ::Message>* GetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequset& request) override;
-    ::grpc::ClientAsyncReader< ::Message>* AsyncGetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequset& request, ::grpc::CompletionQueue* cq, void* tag) override;
-    ::grpc::ClientAsyncReader< ::Message>* PrepareAsyncGetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequset& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReader< ::Message>* GetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequest& request) override;
+    ::grpc::ClientAsyncReader< ::Message>* AsyncGetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequest& request, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReader< ::Message>* PrepareAsyncGetMessagesRaw(::grpc::ClientContext* context, const ::GetMessagesRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::GetPasswordResponse>* AsyncGetPasswordRaw(::grpc::ClientContext* context, const ::GetPasswordRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::GetPasswordResponse>* PrepareAsyncGetPasswordRaw(::grpc::ClientContext* context, const ::GetPasswordRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_InsertUser_;
     const ::grpc::internal::RpcMethod rpcmethod_UserExists_;
     const ::grpc::internal::RpcMethod rpcmethod_StoreMessage_;
     const ::grpc::internal::RpcMethod rpcmethod_GetMessages_;
+    const ::grpc::internal::RpcMethod rpcmethod_GetPassword_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -168,7 +191,8 @@ class Database final {
     virtual ::grpc::Status InsertUser(::grpc::ServerContext* context, const ::InsertUserRequest* request, ::InsertUserResponse* response);
     virtual ::grpc::Status UserExists(::grpc::ServerContext* context, const ::UserExistsRequest* request, ::UserExistsResponse* response);
     virtual ::grpc::Status StoreMessage(::grpc::ServerContext* context, const ::Message* request, ::StoreMessageResponse* response);
-    virtual ::grpc::Status GetMessages(::grpc::ServerContext* context, const ::GetMessagesRequset* request, ::grpc::ServerWriter< ::Message>* writer);
+    virtual ::grpc::Status GetMessages(::grpc::ServerContext* context, const ::GetMessagesRequest* request, ::grpc::ServerWriter< ::Message>* writer);
+    virtual ::grpc::Status GetPassword(::grpc::ServerContext* context, const ::GetPasswordRequest* request, ::GetPasswordResponse* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_InsertUser : public BaseClass {
@@ -242,15 +266,35 @@ class Database final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMessages(::grpc::ServerContext* /*context*/, const ::GetMessagesRequset* /*request*/, ::grpc::ServerWriter< ::Message>* /*writer*/) override {
+    ::grpc::Status GetMessages(::grpc::ServerContext* /*context*/, const ::GetMessagesRequest* /*request*/, ::grpc::ServerWriter< ::Message>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetMessages(::grpc::ServerContext* context, ::GetMessagesRequset* request, ::grpc::ServerAsyncWriter< ::Message>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestGetMessages(::grpc::ServerContext* context, ::GetMessagesRequest* request, ::grpc::ServerAsyncWriter< ::Message>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncServerStreaming(3, context, request, writer, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_InsertUser<WithAsyncMethod_UserExists<WithAsyncMethod_StoreMessage<WithAsyncMethod_GetMessages<Service > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_GetPassword : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_GetPassword() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_GetPassword() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetPassword(::grpc::ServerContext* /*context*/, const ::GetPasswordRequest* /*request*/, ::GetPasswordResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGetPassword(::grpc::ServerContext* context, ::GetPasswordRequest* request, ::grpc::ServerAsyncResponseWriter< ::GetPasswordResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_InsertUser<WithAsyncMethod_UserExists<WithAsyncMethod_StoreMessage<WithAsyncMethod_GetMessages<WithAsyncMethod_GetPassword<Service > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_InsertUser : public BaseClass {
    private:
@@ -339,22 +383,49 @@ class Database final {
    public:
     WithCallbackMethod_GetMessages() {
       ::grpc::Service::MarkMethodCallback(3,
-          new ::grpc::internal::CallbackServerStreamingHandler< ::GetMessagesRequset, ::Message>(
+          new ::grpc::internal::CallbackServerStreamingHandler< ::GetMessagesRequest, ::Message>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::GetMessagesRequset* request) { return this->GetMessages(context, request); }));
+                   ::grpc::CallbackServerContext* context, const ::GetMessagesRequest* request) { return this->GetMessages(context, request); }));
     }
     ~WithCallbackMethod_GetMessages() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMessages(::grpc::ServerContext* /*context*/, const ::GetMessagesRequset* /*request*/, ::grpc::ServerWriter< ::Message>* /*writer*/) override {
+    ::grpc::Status GetMessages(::grpc::ServerContext* /*context*/, const ::GetMessagesRequest* /*request*/, ::grpc::ServerWriter< ::Message>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerWriteReactor< ::Message>* GetMessages(
-      ::grpc::CallbackServerContext* /*context*/, const ::GetMessagesRequset* /*request*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::GetMessagesRequest* /*request*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_InsertUser<WithCallbackMethod_UserExists<WithCallbackMethod_StoreMessage<WithCallbackMethod_GetMessages<Service > > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_GetPassword : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_GetPassword() {
+      ::grpc::Service::MarkMethodCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::GetPasswordRequest, ::GetPasswordResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::GetPasswordRequest* request, ::GetPasswordResponse* response) { return this->GetPassword(context, request, response); }));}
+    void SetMessageAllocatorFor_GetPassword(
+        ::grpc::MessageAllocator< ::GetPasswordRequest, ::GetPasswordResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::GetPasswordRequest, ::GetPasswordResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_GetPassword() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetPassword(::grpc::ServerContext* /*context*/, const ::GetPasswordRequest* /*request*/, ::GetPasswordResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* GetPassword(
+      ::grpc::CallbackServerContext* /*context*/, const ::GetPasswordRequest* /*request*/, ::GetPasswordResponse* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_InsertUser<WithCallbackMethod_UserExists<WithCallbackMethod_StoreMessage<WithCallbackMethod_GetMessages<WithCallbackMethod_GetPassword<Service > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_InsertUser : public BaseClass {
@@ -419,7 +490,24 @@ class Database final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMessages(::grpc::ServerContext* /*context*/, const ::GetMessagesRequset* /*request*/, ::grpc::ServerWriter< ::Message>* /*writer*/) override {
+    ::grpc::Status GetMessages(::grpc::ServerContext* /*context*/, const ::GetMessagesRequest* /*request*/, ::grpc::ServerWriter< ::Message>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_GetPassword : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_GetPassword() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_GetPassword() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetPassword(::grpc::ServerContext* /*context*/, const ::GetPasswordRequest* /*request*/, ::GetPasswordResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -496,12 +584,32 @@ class Database final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMessages(::grpc::ServerContext* /*context*/, const ::GetMessagesRequset* /*request*/, ::grpc::ServerWriter< ::Message>* /*writer*/) override {
+    ::grpc::Status GetMessages(::grpc::ServerContext* /*context*/, const ::GetMessagesRequest* /*request*/, ::grpc::ServerWriter< ::Message>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetMessages(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncServerStreaming(3, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_GetPassword : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_GetPassword() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_GetPassword() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetPassword(::grpc::ServerContext* /*context*/, const ::GetPasswordRequest* /*request*/, ::GetPasswordResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGetPassword(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -585,12 +693,34 @@ class Database final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMessages(::grpc::ServerContext* /*context*/, const ::GetMessagesRequset* /*request*/, ::grpc::ServerWriter< ::Message>* /*writer*/) override {
+    ::grpc::Status GetMessages(::grpc::ServerContext* /*context*/, const ::GetMessagesRequest* /*request*/, ::grpc::ServerWriter< ::Message>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerWriteReactor< ::grpc::ByteBuffer>* GetMessages(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_GetPassword : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_GetPassword() {
+      ::grpc::Service::MarkMethodRawCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetPassword(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_GetPassword() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetPassword(::grpc::ServerContext* /*context*/, const ::GetPasswordRequest* /*request*/, ::GetPasswordResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* GetPassword(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_InsertUser : public BaseClass {
@@ -673,7 +803,34 @@ class Database final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedStoreMessage(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::Message,::StoreMessageResponse>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_InsertUser<WithStreamedUnaryMethod_UserExists<WithStreamedUnaryMethod_StoreMessage<Service > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_GetPassword : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_GetPassword() {
+      ::grpc::Service::MarkMethodStreamed(4,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::GetPasswordRequest, ::GetPasswordResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::GetPasswordRequest, ::GetPasswordResponse>* streamer) {
+                       return this->StreamedGetPassword(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_GetPassword() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status GetPassword(::grpc::ServerContext* /*context*/, const ::GetPasswordRequest* /*request*/, ::GetPasswordResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedGetPassword(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::GetPasswordRequest,::GetPasswordResponse>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_InsertUser<WithStreamedUnaryMethod_UserExists<WithStreamedUnaryMethod_StoreMessage<WithStreamedUnaryMethod_GetPassword<Service > > > > StreamedUnaryService;
   template <class BaseClass>
   class WithSplitStreamingMethod_GetMessages : public BaseClass {
    private:
@@ -682,10 +839,10 @@ class Database final {
     WithSplitStreamingMethod_GetMessages() {
       ::grpc::Service::MarkMethodStreamed(3,
         new ::grpc::internal::SplitServerStreamingHandler<
-          ::GetMessagesRequset, ::Message>(
+          ::GetMessagesRequest, ::Message>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerSplitStreamer<
-                     ::GetMessagesRequset, ::Message>* streamer) {
+                     ::GetMessagesRequest, ::Message>* streamer) {
                        return this->StreamedGetMessages(context,
                          streamer);
                   }));
@@ -694,15 +851,15 @@ class Database final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetMessages(::grpc::ServerContext* /*context*/, const ::GetMessagesRequset* /*request*/, ::grpc::ServerWriter< ::Message>* /*writer*/) override {
+    ::grpc::Status GetMessages(::grpc::ServerContext* /*context*/, const ::GetMessagesRequest* /*request*/, ::grpc::ServerWriter< ::Message>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with split streamed
-    virtual ::grpc::Status StreamedGetMessages(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::GetMessagesRequset,::Message>* server_split_streamer) = 0;
+    virtual ::grpc::Status StreamedGetMessages(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::GetMessagesRequest,::Message>* server_split_streamer) = 0;
   };
   typedef WithSplitStreamingMethod_GetMessages<Service > SplitStreamedService;
-  typedef WithStreamedUnaryMethod_InsertUser<WithStreamedUnaryMethod_UserExists<WithStreamedUnaryMethod_StoreMessage<WithSplitStreamingMethod_GetMessages<Service > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_InsertUser<WithStreamedUnaryMethod_UserExists<WithStreamedUnaryMethod_StoreMessage<WithSplitStreamingMethod_GetMessages<WithStreamedUnaryMethod_GetPassword<Service > > > > > StreamedService;
 };
 
 
