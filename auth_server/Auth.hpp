@@ -13,17 +13,19 @@
 
 
 #include "Hasher.hpp"
-#include "DBClient"
+#include "DBClient.hpp"
 
 class Auth {
 public:
-    Auth(const std::string& secret_key);
+    Auth(const std::string& db_adress, const std::string& secret_key);
 
-    bool authUser(const std::string& username, const std::string& password, std::string& error);
+    std::string authUser(const std::string& username, const std::string& password, std::string& error);
     
     bool registerUser(const std::string& username, const std::string& password, std::string& error);
     
-    std::string getSubject(const std::string& token);
+    std::string getSubject(const std::string& token, std::string& error);
+    
+    bool verifyJWT(const std::string& token, std::string& error);
     
 private:
     using traits = jwt::traits::nlohmann_json;
@@ -32,8 +34,6 @@ private:
     DBClient _db;
 
     std::string _secretKey;
-    
-    std::pair<bool, std::string> verifyJWT(const std::string& token);
     
     std::string generateJWT(const std::string& subject);
     

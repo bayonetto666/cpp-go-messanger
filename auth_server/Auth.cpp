@@ -17,19 +17,33 @@ std::string Auth::generateJWT(const std::string& subject) {
     }
 }
 
-Auth::Auth(const std::string &secret_key) : _secretKey(secret_key)
+Auth::Auth(const std::string& db_adress, const std::string &secret_key) : _secretKey(secret_key), _db(db_adress)
+{}
+
+std::string Auth::authUser(const std::string &username, const std::string &password, std::string &error)
 {
-}
+    try
+    {
+        auto password_data = _db.GetPassword(username);
 
-bool Auth::authUser(const std::string &username, const std::string &password, std::string &error)
-{
-    std::string ec;
+        bool verified = Hasher::verifyPassword(password, password_data.first, password_data.second);
 
-    auto password_data = _db.GetPassword(username);
+        if (!verified)
+        {
+            error = "Password was not verified";
+            return "";
+        }
 
-    bool verified = Hasher::verifyPassword(password, password_data.first, password_data.second);
+        return generateJWT(username);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        error = e.what();
+    }
+    
+    
 
-    return verified;
 }
 
 bool Auth::registerUser(const std::string& username, const std::string& password,  std::string& error){
@@ -56,8 +70,7 @@ bool Auth::registerUser(const std::string& username, const std::string& password
     return true;
 }
 
-std::pair<bool, std::string> Auth::verifyJWT(const std::string& token) {
-    std::string error;
+bool Auth::verifyJWT(const std::string& token, std::string& error){
     try {
         jwt::decoded_jwt decoded = jwt::decode(token);
         jwt::verify()
@@ -65,15 +78,15 @@ std::pair<bool, std::string> Auth::verifyJWT(const std::string& token) {
         .verify(decoded);
 
         std::cout << "JWT-token \"" << token << "\" was verified." << std::endl;
-        return std::make_pair(true, "");
+        return true;
         } catch (const std::exception& e) {
             std::cerr << "Error JWT-token verification: " << e.what() << std::endl;
             error = e.what();
         }
-        return std::make_pair(false, error);
+        return false;
 }
 
-std::string Auth::getSubject(const std::string& token) {
+std::string Auth::getSubject(const std::string& token, std::string& error) {
     try {
         const auto decoded = jwt::decode<traits>(token);
 
@@ -86,6 +99,7 @@ std::string Auth::getSubject(const std::string& token) {
         return subject;
        } catch (const std::exception& e) {
            std::cerr << "Error while processing JWT token: " << e.what() << std::endl;
+           error = e.what();
            return "";
        }
 }

@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+message authUserRequest{
+    string username = 1;
+    string password = 2;
+}
+
+message authUserResponse{
+    string token = 1;
+    string error = 2;
+}
+
+message registerUserRequest{
+    string username = 1;
+    string password = 2;
+}
+
+message registerUserResponse{
+    bool success = 1;
+}
+
+message getSubjectRequest{
+    string token = 1;
+}
+
+message getSubjectResponse{
+    string subject = 1;
+    string error = 2;
+}
+
+message verifyJWTRequest{
+    string token = 1;
+}
+
+message verifyJWTResponse{
+    bool verified = 1;
+    string error = 2;
+}
+
+service Authentication{
+    rpc authUser (authUserRequest) returns (authUserResponse);
+    rpc registerUser (registerUserRequest) returns (registerUserResponse);
+    rpc getSubject (getSubjectRequest) returns (getSubjectResponse);
+    rpc verifyJWT (verifyJWTRequest) returns (verifyJWTResponse);
+}
