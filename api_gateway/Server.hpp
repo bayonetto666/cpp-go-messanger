@@ -7,6 +7,10 @@
 #include <boost/beast.hpp>
 #include <nlohmann/json.hpp>
 
+
+#include "AuthClient.hpp"
+#include "DBClient.hpp"
+
 namespace asio = boost::asio;
 namespace beast = boost::beast;
 namespace http = boost::beast::http;
@@ -18,7 +22,7 @@ public:
     
     void listen();
     
-    void stop();
+    // void stop();
     
 private:
     asio::io_context _context;
@@ -28,6 +32,9 @@ private:
     
     bool _isRunning = false;
     std::string _secretKey;
+
+    AuthClient _auth;
+    DBClient _db;
     
     void handleRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket,
         const asio::ip::tcp::endpoint& clientEndpoint);

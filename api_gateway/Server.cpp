@@ -1,14 +1,14 @@
 #include "Server.hpp"
 
 Server::Server() : _context(), _serverSocket(_context),
-    _serverEndpoint(asio::ip::make_address("127.0.0.1"), 8080), _acceptor(_context, _serverEndpoint), _isRunning(true)
-//,    _dbHandler(std::make_shared<DatabaseHandler>("mongodb://localhost:27017"))
+    _serverEndpoint(asio::ip::make_address("127.0.0.1"), 8080), _acceptor(_context, _serverEndpoint), _isRunning(true),
+    _db("0.0.0.0:50051"), _auth("0.0.0.0:50052")
 {}
 
-void Server::stop() {
-    _isRunning = false;
-    _serverSocket.close(); // Закройте серверный сокет, чтобы прервать ожидание accept
-}
+// void Server::stop() {
+//     _isRunning = false;
+//     _serverSocket.close(); // Закройте серверный сокет, чтобы прервать ожидание accept
+// }
 
 void Server::listen(){
     while (_isRunning) {
@@ -40,30 +40,59 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
     else if(request.method() == http::verb::post && request.target() == "/auth/login") {
         handleLoginRequest(request, clientSocket);
     }
+    // else if(request.method() == http::verb::)
+
 }
 
 void Server::handleSendMessageRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket, const asio::ip::tcp::endpoint& clientEndpoint) {
-//    std::string ex_what;
-//    nlohmann::json json_body;
-//
-//    if (!parseJson(request.body(), json_body, ex_what)) {
-//        std::cerr << "Error parsing json, message has not been sent" << std::endl;
-//        sendErrorResponse(clientSocket, http::status::bad_request, ex_what, request.version());
-//        return;
-//    }
-//    std::string recipient;
-//    std::string message;
-//    std::string token;
-//    recipient = json_body["recipient"];
-//    message = json_body["message"];
-//    try {
-//        token = request.at(http::field::authorization);
-//    } catch (const std::exception& e) {
-//        std::cout << "Error: " << e.what() << std::endl;
-//        sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain authorization token", request.version());
-//        return;
-//    }
-//
+    std::string error;
+    nlohmann::json json_body;
+
+    if (!parseJson(request.body(), json_body, error)) {
+        std::cerr << "Error parsing json, message has not been sent" << std::endl;
+        sendErrorResponse(clientSocket, http::status::bad_request, error, request.version());
+        return;
+    }
+    std::string recipient;
+    std::string message;
+    std::string token;
+    recipient = json_body["recipient"];
+    message = json_body["message"];
+    try {
+        token = request.at(http::field::authorization);
+    } catch (const std::exception& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+        sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain authorization token", request.version());
+        return;
+    }
+
+    bool verified = _auth.verifyJWT(token, error);
+    
+    if(!error.empty()){
+
+    }
+    if (!verified)
+    {
+        sendErrorResponse(clientSocket, http::status::unauthorized, "Token was not verified", request.version());
+        return;
+    }
+
+    if (!_db.UserExists(recipient))
+    {
+        sendErrorResponse(clientSocket, http::status::bad_request, "User with name " + recipient + " does not exist", request.version());
+        return;
+    }
+    
+    const std::string sender = _auth.getSubject(token, error);
+
+    if (!error.empty())
+    {
+        
+    }
+    
+    _db.storeMessage(recipient, sender, message, error);
+    
+    
 //    if (!AuthJWT::verifyJWT(token, _secretKey)) {
 //        sendErrorResponse(clientSocket, http::status::unauthorized, "Token was not verified", request.version());
 //        return;
@@ -78,25 +107,27 @@ void Server::handleSendMessageRequest(const http::request<http::string_body>& re
 //    
 //    _dbHandler->storeMessage(sender, recipient, message, ex_what);
 //
-//    http::response<http::string_body> response;
-//    response.result(http::status::ok);
-//    response.version(request.version());
-//    response.set(http::field::server, "Server 0.1");
-//    response.set(http::field::content_type, "application/json");
-//    
-//    if (ex_what.empty()) {
-//        std::string responseBody = "Message was successfully sent";
-//        response.set(http::field::content_length, std::to_string(responseBody.size()));
-//        response.body() = std::move(responseBody);
-//    } else {
-//        std::string responseBody = "Error sending message: " + ex_what;
-//        response.result(http::status::bad_request);
-//        response.set(http::field::content_length, std::to_string(responseBody.size()));
-//        response.body() = std::move(responseBody);
-//    }
-//
-//    response.prepare_payload();
-//    http::write(clientSocket, response);
+   http::response<http::string_body> response;
+   response.result(http::status::ok);
+   response.version(request.version());
+   response.set(http::field::server, "Server 0.1");
+   response.set(http::field::content_type, "application/json");
+   
+   if (error.empty()) {
+       std::string responseBody = "Message was successfully sent";
+       response.set(http::field::content_length, std::to_string(responseBody.size()));
+       response.body() = std::move(responseBody);
+   } else {
+       std::string responseBody = "Error sending message: " + error;
+       response.result(http::status::bad_request);
+       response.set(http::field::content_length, std::to_string(responseBody.size()));
+       response.body() = std::move(responseBody);
+   }
+
+   response.prepare_payload();
+   http::write(clientSocket, response);
+    
+
 }
 
 bool Server::parseJson(const std::string& body, nlohmann::json& parsedJson, std::string& ex_what){
@@ -154,41 +185,34 @@ void Server::handleClient(asio::ip::tcp::socket& clientSocket, const asio::ip::t
     handleRequest(request, clientSocket, clientEndpoint);
 }
 void Server::handleRegisterRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket){
-//    nlohmann::json json_body;
-//    std::string ex_what;
-//    if(!parseJson(request.body(), json_body, ex_what)){
-//        std::cerr << "Error parsing json, message has not been sent" << std::endl;
-//        sendErrorResponse(clientSocket, http::status::bad_request, ex_what, request.version());
-//        return;
-//    }
-//    try {
-//        _dbHandler->insertUser(json_body);
-//    } catch (const std::exception& e) {
-//        std::cerr << "Error registering user: " << e.what() << std::endl;
-//        sendErrorResponse(clientSocket, http::status::bad_request, e.what(), 11);
-//        return;
-//    }
-//    
-//    http::response<http::string_body> response;
-//    response.result(http::status::ok);
-//    response.version(request.version());
-//    response.set(http::field::server, "YourServerName");
-//    response.set(http::field::content_type, "application/json");
-//    response.set(http::field::access_control_allow_origin, "*");  // Это заголовок CORS для разрешения запросов с любого источника
+    nlohmann::json json_body;
+    std::string error;
+    if(!parseJson(request.body(), json_body, error)){
+       std::cerr << "Error parsing json, message has not been sent" << std::endl;
+       sendErrorResponse(clientSocket, http::status::bad_request, error, request.version());
+       return;
+    }
+    
+    try {
+        _auth.registerUser(json_body["username"], json_body["password"], error);        
 
-    // Если вы хотите добавить дополнительные заголовки, например, заголовок для длины содержимого (Content-Length), вы можете сделать это так:
-    // response.set(http::field::content_length, std::to_string(responseBody.size()));  // responseBody - ваш ответ в виде строки
+        if (!error.empty())
+        {
+            sendErrorResponse(clientSocket, http::status::bad_request, error, request.version());
+        }
+        
+        http::response<http::string_body> response;
+        response.result(http::status::ok);
+        response.version(request.version());
+        response.set(http::field::server, "Server 0.2");
+        response.set(http::field::content_type, "application/json");
+        http::write(clientSocket, response);
 
-    // Если у вас есть тело ответа (response body), добавьте его следующим образом:
-//    std::string responseBody = "Registration successful";  // Ваше сообщение об успешной регистрации
-//    response.body() = responseBody;
-//
-//    // Укажите длину содержимого (Content-Length), если это необходимо
-//    response.set(http::field::content_length, std::to_string(responseBody.size()));
-//
-//    response.prepare_payload();  // Подготовьте ответ для отправки
-//
-//    http::write(clientSocket, response);
+   } catch (const std::exception& e) {
+       std::cerr << "Error registering user: " << e.what() << std::endl;
+       sendErrorResponse(clientSocket, http::status::bad_request, e.what(), 2);
+       return;
+   }
 
 }
 
@@ -225,6 +249,30 @@ void Server::handleLoginRequest(const http::request<http::string_body>& request,
 //    else
 //        sendErrorResponse(clientSocket, http::status::unauthorized, "Wrong password", 11);
 //    
+    nlohmann::json json_body;
+    std::string error;
+    if(!parseJson(request.body(), json_body, error)){
+       std::cerr << "Error parsing json, login failed" << std::endl;
+       sendErrorResponse(clientSocket, http::status::bad_request, error, request.version());
+       return;
+    }
+    
+    std::string token = _auth.authUser(json_body["username"], json_body["password"], error);
+
+    if (!error.empty())
+    {
+        sendErrorResponse(clientSocket, http::status::bad_request, error, 2);
+    }
+    
+    http::response<http::string_body> response;
+    response.result(http::status::ok);
+    response.version(request.version());
+    response.set(http::field::server, "Server 0.2");
+    response.set(http::field::content_type, "application/json");
+    response.body() = token;
+    http::write(clientSocket, response);
+
+
 }
 
 void Server::handleGetMessagesRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket){
