@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+option go_package = "github.com/bayonetto666/messanger/protos";
+
 package chat;
 
 service ChatService {
