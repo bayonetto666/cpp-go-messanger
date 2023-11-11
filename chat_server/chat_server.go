@@ -15,27 +15,20 @@ import (
 	"google.golang.org/grpc"
 )
 
-var chatRoomMutex sync.Mutex
-var chatRooms = make(map[string]*ChatRoom)
+// var chatRoomMutex sync.Mutex
+// var chatRooms = make(map[string]*ChatRoom)
 
 type gRPCServer struct {
 	protos.UnimplementedChatServiceServer
+	controller *Controller
 }
 
 func (s *gRPCServer) CreateRoom(ctx context.Context, req *protos.RoomRequest) (*protos.RoomResponse, error) {
-	// Логика создания комнаты
 	roomID := req.RoomId
 
-	chatRoomMutex.Lock()
-	defer chatRoomMutex.Unlock()
+	s.controller.CreateRoom(roomID)
 
-	if _, exists := chatRooms[roomID]; !exists {
-		chatRooms[roomID] = NewChatRoom(roomID)
-		fmt.Printf("Room %s created\n", roomID)
-		return &protos.RoomResponse{Message: "Room created successfully"}, nil
-	}
-
-	return &protos.RoomResponse{Message: "Room already exists"}, nil
+	return &protos.RoomResponse{Message: "Room created successfully (via gRPC)"}, nil
 }
 
 type Connection struct {
@@ -221,17 +214,21 @@ func main() {
 	controller := NewController()
 
 	// Запуск gRPC-сервера
+	grpcServer := &gRPCServer{
+		controller: controller,
+	}
+
 	go func() {
 		listener, err := net.Listen("tcp", ":50051")
 		if err != nil {
 			log.Fatalf("Failed to listen: %v", err)
 		}
 
-		grpcServer := grpc.NewServer()
-		protos.RegisterChatServiceServer(grpcServer, &gRPCServer{})
+		server := grpc.NewServer()
+		protos.RegisterChatServiceServer(server, grpcServer)
 
 		fmt.Println("gRPC server started on :50051")
-		err = grpcServer.Serve(listener)
+		err = server.Serve(listener)
 		if err != nil {
 			log.Fatalf("Failed to serve: %v", err)
 		}
