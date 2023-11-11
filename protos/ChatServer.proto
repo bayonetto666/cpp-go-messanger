@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package chat;
+
+service ChatService {
+  rpc CreateRoom (RoomRequest) returns (RoomResponse);
+//   rpc EnterRoom (RoomEntryRequest) returns (RoomResponse);
+//   rpc SendMessage (MessageRequest) returns (MessageResponse);
+}
+
+message RoomRequest {
+  string room_id = 1;
+}
+
+// message RoomEntryRequest {
+//   string room_id = 1;
+//   string user_id = 2;
+// }
+
+// message MessageRequest {
+//   string room_id = 1;
+//   string user_id = 2;
+//   string message = 3;
+// }
+
+message RoomResponse {
+  string message = 1;
+}
+
+// message MessageResponse {
+//   string message = 1;
+// }
