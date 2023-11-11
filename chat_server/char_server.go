@@ -15,6 +15,76 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type ChatRoom struct {
+	ID           string
+	connections  map[*Connection]struct{}
+	connMutex    sync.Mutex
+	messageQueue chan []byte
+}
+
+func NewChatRoom(roomID string) *ChatRoom {
+	return &ChatRoom{
+		ID:           roomID,
+		connections:  make(map[*Connection]struct{}),
+		messageQueue: make(chan []byte),
+	}
+}
+
+func (c *ChatRoom) AddConnection(conn *Connection) {
+	c.connMutex.Lock()
+	defer c.connMutex.Unlock()
+	c.connections[conn] = struct{}{}
+}
+
+func (c *ChatRoom) RemoveConnection(conn *Connection) {
+	c.connMutex.Lock()
+	defer c.connMutex.Unlock()
+	delete(c.connections, conn)
+	close(conn.send)
+}
+
+func (c *ChatRoom) BroadcastMessage(message []byte) {
+	c.connMutex.Lock()
+	defer c.connMutex.Unlock()
+	for conn := range c.connections {
+		select {
+		case conn.send <- message:
+		default:
+			close(conn.send)
+			delete(c.connections, conn)
+		}
+	}
+}
+
+var chatRooms = make(map[string]*ChatRoom)
+var chatRoomMutex sync.Mutex
+
+func create_room(roomID string) {
+	chatRoomMutex.Lock()
+	defer chatRoomMutex.Unlock()
+
+	if _, exists := chatRooms[roomID]; !exists {
+		chatRooms[roomID] = NewChatRoom(roomID)
+		fmt.Printf("Room %s created\n", roomID)
+	} else {
+		fmt.Printf("Room %s already exists\n", roomID)
+	}
+}
+
+func enter_room(roomID string, connection *Connection) {
+	chatRoomMutex.Lock()
+	defer chatRoomMutex.Unlock()
+
+	room, exists := chatRooms[roomID]
+	if !exists {
+		fmt.Printf("Room %s does not exist\n", roomID)
+		return
+	}
+
+	room.AddConnection(connection)
+	fmt.Printf("Client entered room %s\n", roomID)
+}
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -29,23 +99,6 @@ var (
 type Connection struct {
 	conn *websocket.Conn
 	send chan []byte
-}
-
-func main() {
-	http.HandleFunc("/chat", handleConnection)
-	http.Handle("/", http.FileServer(http.Dir("static")))
-
-	// Сигнал для завершения горутин
-	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt)
-
-	go func() {
-		<-interrupt
-		close(messageQueue)
-	}()
-
-	fmt.Println("Server started on :8080")
-	http.ListenAndServe(":8080", nil)
 }
 
 func handleConnection(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +118,14 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 	connMutex.Lock()
 	connections[connection] = struct{}{}
 	connMutex.Unlock()
+
+	// Получение room_id из параметра запроса
+	roomID := r.URL.Query().Get("room_id")
+
+	// Если параметр room_id не пустой, присоединяем клиента к комнате
+	if roomID != "" {
+		enter_room(roomID, connection)
+	}
 
 	go func() {
 		defer func() {
@@ -122,4 +183,21 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 			connMutex.Unlock()
 		}
 	}
+}
+
+func main() {
+	http.HandleFunc("/chat", handleConnection)
+	http.Handle("/", http.FileServer(http.Dir("static")))
+
+	// Сигнал для завершения горутин
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
+
+	go func() {
+		<-interrupt
+		close(messageQueue)
+	}()
+
+	fmt.Println("Server started on :50004")
+	http.ListenAndServe(":50004", nil)
 }

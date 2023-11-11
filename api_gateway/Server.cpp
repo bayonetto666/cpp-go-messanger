@@ -28,20 +28,25 @@ void Server::listen(){
 
 void Server::handleRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket,
     const asio::ip::tcp::endpoint& clientEndpoint) {
+    //надо будет как-то красиво сделать потом
     if (request.method() == http::verb::post && request.target() == "/messages") {
-        handleSendMessageRequest(request, clientSocket, clientEndpoint);
+        handleSendMessageRequest(request, clientSocket, clientEndpoint); //done
     }
     else if (request.method() == http::verb::get && request.target() == "/messages") {
         handleGetMessagesRequest(request, clientSocket);
     }
     else if(request.method() == http::verb::post && request.target() == "/auth/register") {
-        handleRegisterRequest(request, clientSocket);
+        handleRegisterRequest(request, clientSocket); //done
     }
     else if(request.method() == http::verb::post && request.target() == "/auth/login") {
-        handleLoginRequest(request, clientSocket);
+        handleLoginRequest(request, clientSocket); //done
     }
-    // else if(request.method() == http::verb::)
-
+    else if(request.method() == http::verb::post && request.target() == "/chat/create"){
+        handleStartChatRequest(request, clientSocket);
+    }
+    else if(request.method() == http::verb::post && request.target() == "/chat/connect"){
+        handleConnectToChatRequest(request, clientSocket);
+    }
 }
 
 void Server::handleSendMessageRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket, const asio::ip::tcp::endpoint& clientEndpoint) {
@@ -307,4 +312,13 @@ void Server::handleGetMessagesRequest(const http::request<http::string_body>& re
 //        std::cerr << ex.what() << std::endl;
 //        sendErrorResponse(clientSocket, http::status::bad_request, ex.what(), 11);
 //    }
+}
+
+void Server::handleStartChatRequest(const http::request<http::string_body> &request, asio::ip::tcp::socket &clientSocket){
+    
+}
+
+void Server::handleConnectToChatRequest(const http::request<http::string_body> &request, asio::ip::tcp::socket &clientSocket)
+{
+
 }
