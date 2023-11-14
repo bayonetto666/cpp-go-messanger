@@ -57,5 +57,6 @@ private:
     void handleClient(asio::ip::tcp::socket& clientSocket, const asio::ip::tcp::endpoint& clientEndpoint);
 
     void handleWebSocketConnection(tcp::socket& socket);
-    void proxyData(ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs);
+    // void proxyData(ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs);
+    void proxyWebSocketData(ws::stream<tcp::socket>& fromWs, ws::stream<tcp::socket>& toWs);
 };
