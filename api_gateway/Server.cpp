@@ -361,26 +361,57 @@ void Server::listenWS(){
 void Server::handleWebSocketConnection(tcp::socket& socket){
     try
     {
-        ws::stream<tcp::socket> wsocket{std::move(socket)};
+        auto wsocket = std::make_shared<ws::stream<tcp::socket>>(std::move(socket));
+        // ws::stream<tcp::socket> wsocket{std::move(socket)};
 
-        wsocket.accept();
+        wsocket->accept();
 
-        // tcp::socket chat_server_socket(_context);
-
-        // for(;;)
-        // {
-        //     beast::flat_buffer buffer;
-        //     wsocket.read(buffer);
-        //     wsocket.text(wsocket.got_text());
-        //     wsocket.write(buffer.data());
-        // }
-
-        // chat_server_socket.connect({ip::make_address("0.0.0.0"), 50010});
+        tcp::socket chat_server_socket(_context);
+        chat_server_socket.connect({ip::make_address("0.0.0.0"), 50010});
 
         // ws::stream<tcp::socket> serverWs{std::move(chat_server_socket)};
+        auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(chat_server_socket));
 
-        // serverWs.handshake();
 
+        serverWs->handshake("0.0.0.0:50010", "/chat?room_id=123");
+
+        // std::thread listen_from_client = std::thread([&wsocket, &serverWs](){
+        // for(;;)
+        //     {
+        //         beast::flat_buffer buffer;
+        //         wsocket.read(buffer);
+        //         wsocket.text(wsocket.got_text());
+        //         serverWs.write(buffer.data());
+        //     }
+        // });
+        // std::thread listen_from_server = std::thread([&serverWs, &wsocket](){
+        //     for(;;)
+        //     {
+        //         beast::flat_buffer buffer;
+        //         serverWs.read(buffer);
+        //         serverWs.text(serverWs.got_text());
+        //         wsocket.write(buffer.data());
+        //     }
+        // });
+
+        std::thread([wsocket, serverWs](){
+            for(;;)
+                {
+                    beast::flat_buffer buffer;
+                    wsocket->read(buffer);
+                    wsocket->text(wsocket->got_text());
+                    serverWs->write(buffer.data());
+                }
+        }).detach();
+        std::thread([serverWs, wsocket](){
+            for(;;)
+            {
+                beast::flat_buffer buffer;
+                serverWs->read(buffer);
+                serverWs->text(serverWs->got_text());
+                wsocket->write(buffer.data());
+            }
+        }).detach();
     }
     catch(beast::system_error const& se)
     {
