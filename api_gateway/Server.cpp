@@ -2,7 +2,7 @@
 
 Server::Server() : _context(), _serverSocket(_context),
     _serverEndpoint(asio::ip::make_address("127.0.0.1"), 8080), _acceptor(_context, _serverEndpoint), _isRunning(true),
-    _db("0.0.0.0:50051"), _auth("0.0.0.0:50052")
+    _db("0.0.0.0:50051"), _auth("0.0.0.0:50052"), _wsAcceptor(_context, {asio::ip::make_address("127.0.0.1"), 8081})
 {}
 
 // void Server::stop() {
@@ -11,6 +11,7 @@ Server::Server() : _context(), _serverSocket(_context),
 // }
 
 void Server::listen(){
+    _context.run();
     while (_isRunning) {
         asio::ip::tcp::socket clientSocket(_context); // Создаем сокет для клиента
         asio::ip::tcp::endpoint clientEndpoint;
@@ -189,7 +190,9 @@ void Server::handleClient(asio::ip::tcp::socket& clientSocket, const asio::ip::t
     
     handleRequest(request, clientSocket, clientEndpoint);
 }
-void Server::handleRegisterRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket){
+
+void Server::handleRegisterRequest(const http::request<http::string_body> &request, asio::ip::tcp::socket &clientSocket)
+{
     nlohmann::json json_body;
     std::string error;
     if(!parseJson(request.body(), json_body, error)){
@@ -218,7 +221,6 @@ void Server::handleRegisterRequest(const http::request<http::string_body>& reque
        sendErrorResponse(clientSocket, http::status::bad_request, e.what(), 2);
        return;
    }
-
 }
 
 void Server::handleLoginRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket){
@@ -321,4 +323,114 @@ void Server::handleStartChatRequest(const http::request<http::string_body> &requ
 void Server::handleConnectToChatRequest(const http::request<http::string_body> &request, asio::ip::tcp::socket &clientSocket)
 {
 
+}
+
+void Server::listenWS(){
+    // tcp::socket socket(_context);
+    // _wsAcceptor.async_accept(socket,
+    //     [this, &socket](boost::system::error_code ec) {
+    //         if (!ec) {
+    //             // Successfully accepted a WebSocket connection
+    //             handleWebSocketConnection(std::move(socket));
+    //         }
+
+    //         // Your code to handle the next incoming connection
+    //         listenWS();
+    //     });
+
+    while (_isRunning) {
+        asio::ip::tcp::socket clientSocket(_context); // Создаем сокет для клиента
+        asio::ip::tcp::endpoint clientEndpoint;
+        
+        // Принимаем входящее соединение
+        _wsAcceptor.accept(clientSocket, clientEndpoint);
+        
+        auto clientSocketPtr = std::make_shared<asio::ip::tcp::socket>(std::move(clientSocket));
+
+        std::thread([this, clientSocketPtr, &clientEndpoint]() {
+            handleWebSocketConnection(*clientSocketPtr);
+        }).detach();
+    }
+
+    // tcp::socket socket(_context);
+
+    // ws::stream<tcp::socket&> wsocket(socket);
+
+}
+
+void Server::handleWebSocketConnection(tcp::socket& socket){
+    try
+    {
+        ws::stream<tcp::socket> wsocket{std::move(socket)};
+
+        wsocket.accept();
+
+        // tcp::socket chat_server_socket(_context);
+
+        // for(;;)
+        // {
+        //     beast::flat_buffer buffer;
+        //     wsocket.read(buffer);
+        //     wsocket.text(wsocket.got_text());
+        //     wsocket.write(buffer.data());
+        // }
+
+        // chat_server_socket.connect({ip::make_address("0.0.0.0"), 50010});
+
+        // ws::stream<tcp::socket> serverWs{std::move(chat_server_socket)};
+
+        // serverWs.handshake();
+
+    }
+    catch(beast::system_error const& se)
+    {
+        if(se.code() != beast::websocket::error::closed)
+            std::cerr << "Error: " << se.code().message() << std::endl;
+    }
+    catch(std::exception const& e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+}
+    
+
+void Server::proxyData(ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs){
+    beast::flat_buffer clientBuffer;
+    beast::flat_buffer serverBuffer;
+
+    // Read from client and write to server
+    clientWs.async_read(clientBuffer, 
+        [this, &clientBuffer, &serverWs, &clientWs](beast::error_code ec, std::size_t bytes_transferred){
+            if (ec == ws::error::closed) {
+                // Handle WebSocket connection closure from the client
+                return;
+            }
+
+            serverWs.async_write(clientBuffer.data(), 
+                [this, &clientBuffer, &serverWs, &clientWs](beast::error_code ec, std::size_t bytes_transferred){
+                    if (ec == ws::error::closed) {
+                        // Handle WebSocket connection closure from the server
+                        return;
+                    }
+                    proxyData(clientWs, serverWs);
+                });
+        });
+
+    // Read from server and write to client
+    serverWs.async_read(serverBuffer, 
+        [this, &serverBuffer, &serverWs, &clientWs](beast::error_code ec, std::size_t bytes_transferred){
+            if (ec == ws::error::closed) {
+                // Handle WebSocket connection closure from the server
+                return;
+            }
+
+            clientWs.async_write(serverBuffer.data(), 
+                [this, &serverBuffer, &serverWs, &clientWs](beast::error_code ec, std::size_t bytes_transferred){
+                    if (ec == ws::error::closed) {
+                        // Handle WebSocket connection closure from the client
+                        return;
+                    }
+                    proxyData(clientWs, serverWs);
+                });
+        });
 }

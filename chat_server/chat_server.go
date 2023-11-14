@@ -219,7 +219,7 @@ func main() {
 	}
 
 	go func() {
-		listener, err := net.Listen("tcp", ":50051")
+		listener, err := net.Listen("tcp", ":50041")
 		if err != nil {
 			log.Fatalf("Failed to listen: %v", err)
 		}
@@ -227,7 +227,7 @@ func main() {
 		server := grpc.NewServer()
 		protos.RegisterChatServiceServer(server, grpcServer)
 
-		fmt.Println("gRPC server started on :50051")
+		fmt.Println("gRPC server started on :50041")
 		err = server.Serve(listener)
 		if err != nil {
 			log.Fatalf("Failed to serve: %v", err)
