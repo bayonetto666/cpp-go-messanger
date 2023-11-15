@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -11,6 +12,7 @@ import (
 	protos "protos"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"google.golang.org/grpc"
 )
@@ -18,17 +20,34 @@ import (
 // var chatRoomMutex sync.Mutex
 // var chatRooms = make(map[string]*ChatRoom)
 
+func generateRoomID() (string, error) {
+	uuidObj, err := uuid.NewRandom()
+	if err != nil {
+		return "", err
+	}
+
+	return uuidObj.String(), nil
+}
+
 type gRPCServer struct {
 	protos.UnimplementedChatServiceServer
 	controller *Controller
 }
 
 func (s *gRPCServer) CreateRoom(ctx context.Context, req *protos.RoomRequest) (*protos.RoomResponse, error) {
-	roomID := req.RoomId
+	for attempt := 0; attempt < 10; attempt++ {
+		roomID, err := generateRoomID()
+		if err != nil {
+			return nil, err
+		}
 
-	s.controller.CreateRoom(roomID)
+		if s.controller.chatRooms[roomID] == nil {
+			s.controller.CreateRoom(roomID)
+			return &protos.RoomResponse{Message: "Room created successfully (via gRPC)"}, nil
+		}
+	}
 
-	return &protos.RoomResponse{Message: "Room created successfully (via gRPC)"}, nil
+	return &protos.RoomResponse{Message: "Failed to generate a unique room"}, errors.New("failed to generate a unique room ID after 10 attempts")
 }
 
 type Connection struct {

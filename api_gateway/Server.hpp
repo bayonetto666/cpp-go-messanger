@@ -24,9 +24,6 @@ public:
     Server();
     
     void listen();
-    void listenWS();
-
-    void handleWebSocketConnection(std::shared_ptr<ws::stream<tcp::socket>> clientWs);
 
     // void stop();
     
@@ -54,8 +51,6 @@ private:
     void handleLoginRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket);
     void handleGetMessagesRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket);
 //    void sendMessage(asio::ip::tcp::socket& recipient_socket, const std::string& message, const std::string& sender);
-    void handleStartChatRequest(ws::stream<tcp::socket> &clientSocket);
-    void handleConnectToChatRequest(ws::stream<tcp::socket> &clientSocket);
     bool parseJson(const std::string& body, nlohmann::json& parsedJson, std::string& ex_what);
     void sendErrorResponse(asio::ip::tcp::socket& clientSocket, const http::status& errorStatus, const std::string& errorMessage, const unsigned short& version);
     void handleClient(asio::ip::tcp::socket& clientSocket, const asio::ip::tcp::endpoint& clientEndpoint);

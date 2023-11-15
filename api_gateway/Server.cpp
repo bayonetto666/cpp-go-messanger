@@ -332,64 +332,6 @@ void Server::handleGetMessagesRequest(const http::request<http::string_body>& re
 //    }
 }
 
-void Server::handleStartChatRequest(ws::stream<tcp::socket> &clientSocket){
-    
-}   
-
-void Server::handleConnectToChatRequest(ws::stream<tcp::socket> &clientSocket)
-{
-
-}
-
-void Server::listenWS(){
-    // tcp::socket socket(_context);
-    // _wsAcceptor.async_accept(socket,
-    //     [this, &socket](boost::system::error_code ec) {
-    //         if (!ec) {
-    //             // Successfully accepted a WebSocket connection
-    //             handleWebSocketConnection(std::move(socket));
-    //         }
-
-    //         // Your code to handle the next incoming connection
-    //         listenWS();
-    //     });
-
-    // while (_isRunning) {
-    //     asio::ip::tcp::socket clientSocket(_context); // Создаем сокет для клиента
-    //     asio::ip::tcp::endpoint clientEndpoint;
-        
-    //     // Принимаем входящее соединение
-    //     _wsAcceptor.accept(clientSocket, clientEndpoint);
-        
-    //     auto clientSocketPtr = std::make_shared<asio::ip::tcp::socket>(std::move(clientSocket));
-
-    //     std::thread([this, clientSocketPtr, &clientEndpoint]() {
-    //         handleWebSocketConnection(*clientSocketPtr);
-    //     }).detach();
-    // }
-    // while (_isRunning) {
-    //     asio::ip::tcp::socket clientSocket(_context); // Создаем сокет для клиента
-
-    //     // Принимаем входящее соединение
-    //     _wsAcceptor.accept(clientSocket);
-
-    //     boost::beast::flat_buffer buffer;
-    //     boost::beast::http::request<boost::beast::http::string_body> req;
-    //     boost::beast::http::read(clientSocket, buffer, req);
-
-    //     if (boost::beast::websocket::is_upgrade(req)) {
-    //         auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
-    //         clientWebSocketPtr->accept(req);
-
-    //         std::thread([this, clientWebSocketPtr]() {
-    //             handleWebSocketConnection(clientWebSocketPtr);
-    //         }).detach();
-    //     }
-    // }
-
-
-}
-
 void Server::handleWebSocketConnection(std::shared_ptr<ws::stream<tcp::socket>> clientWs,const std::string& room_id) {
     try {
         tcp::socket serverSocket(_context);
@@ -413,32 +355,6 @@ void Server::handleWebSocketConnection(std::shared_ptr<ws::stream<tcp::socket>> 
     }
 }
 
-// void Server::handleWebSocketConnection(tcp::socket& clientSocket) {
-//     try {
-//         auto clientWs = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
-//         clientWs->accept();
-
-//         tcp::socket serverSocket(_context);
-//         serverSocket.connect({ip::make_address("0.0.0.0"), 50010});
-//         auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
-//         serverWs->handshake("0.0.0.0:50010", "/chat?room_id=123");
-
-//         std::thread([this, clientWs, serverWs]() {
-//             proxyWebSocketData(*clientWs, *serverWs);
-//         }).detach();
-
-//         std::thread([this, serverWs, clientWs]() {
-//             proxyWebSocketData(*serverWs, *clientWs);
-//         }).detach();
-
-//     } catch (beast::system_error const& se) {
-//         if (se.code() != beast::websocket::error::closed)
-//             std::cerr << "Error: " << se.code().message() << std::endl;
-//     } catch (std::exception const& e) {
-//         std::cerr << "Error: " << e.what() << std::endl;
-//     }
-// }
-
 void Server::proxyWebSocketData(ws::stream<tcp::socket>& fromWs, ws::stream<tcp::socket>& toWs) {
     for (;;) {
         try {
@@ -457,7 +373,6 @@ void Server::proxyWebSocketData(ws::stream<tcp::socket>& fromWs, ws::stream<tcp:
         }
     }
 }
-
 
 // void Server::proxyData(ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs){
 //     beast::flat_buffer clientBuffer;
