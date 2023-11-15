@@ -2,7 +2,7 @@
 
 Server::Server() : _context(), _serverSocket(_context),
     _serverEndpoint(asio::ip::make_address("127.0.0.1"), 8080), _acceptor(_context, _serverEndpoint), _isRunning(true),
-    _db("0.0.0.0:50051"), _auth("0.0.0.0:50052"), _wsAcceptor(_context, {asio::ip::make_address("127.0.0.1"), 8081})
+    _db("0.0.0.0:50051"), _auth("0.0.0.0:50052"), _chat("0.0.0.0:50041")
 {}
 
 // void Server::stop() {
@@ -42,11 +42,13 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
     else if(request.method() == http::verb::post && request.target() == "/auth/login") {
         handleLoginRequest(request, clientSocket); //done
     }
-    else if(request.method() == http::verb::post && request.target() == "/chat/create"){
-        handleStartChatRequest(request, clientSocket);
-    }
-    else if(request.method() == http::verb::post && request.target() == "/chat/connect"){
-        handleConnectToChatRequest(request, clientSocket);
+    else if(ws::is_upgrade(request)){
+        if (request.target() == "/chat/new"){
+            handleStartChatRequest(request, clientSocket);
+        }
+        else if (request.target() == "/chat/connect"){
+            handleConnectToChatRequest(request, clientSocket);
+        }
     }
 }
 
@@ -72,7 +74,7 @@ void Server::handleSendMessageRequest(const http::request<http::string_body>& re
         return;
     }
 
-    bool verified = _auth.verifyJWT(token, error);
+    bool verified = _auth.verifyJWT(token, error); //нужно будет перенести выше, или вынести в handleRequest
     
     if(!error.empty()){
 
@@ -187,16 +189,6 @@ void Server::handleClient(asio::ip::tcp::socket& clientSocket, const asio::ip::t
     
     beast::http::read(clientSocket, buffer, parser);
     request = parser.get();
-
-    if (ws::is_upgrade(request)) {
-            auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
-            clientWebSocketPtr->accept(request);
-
-            std::thread([this, clientWebSocketPtr]() {
-                handleWebSocketConnection(clientWebSocketPtr);
-            }).detach();
-        return;
-     }
     
     handleRequest(request, clientSocket, clientEndpoint);
 }
@@ -327,87 +319,105 @@ void Server::handleGetMessagesRequest(const http::request<http::string_body>& re
 }
 
 void Server::handleStartChatRequest(const http::request<http::string_body> &request, asio::ip::tcp::socket &clientSocket){
-    
-}
-
-void Server::handleConnectToChatRequest(const http::request<http::string_body> &request, asio::ip::tcp::socket &clientSocket)
-{
-
-}
-
-void Server::listenWS(){
-    // tcp::socket socket(_context);
-    // _wsAcceptor.async_accept(socket,
-    //     [this, &socket](boost::system::error_code ec) {
-    //         if (!ec) {
-    //             // Successfully accepted a WebSocket connection
-    //             handleWebSocketConnection(std::move(socket));
-    //         }
-
-    //         // Your code to handle the next incoming connection
-    //         listenWS();
-    //     });
-
-    // while (_isRunning) {
-    //     asio::ip::tcp::socket clientSocket(_context); // Создаем сокет для клиента
-    //     asio::ip::tcp::endpoint clientEndpoint;
-        
-    //     // Принимаем входящее соединение
-    //     _wsAcceptor.accept(clientSocket, clientEndpoint);
-        
-    //     auto clientSocketPtr = std::make_shared<asio::ip::tcp::socket>(std::move(clientSocket));
-
-    //     std::thread([this, clientSocketPtr, &clientEndpoint]() {
-    //         handleWebSocketConnection(*clientSocketPtr);
-    //     }).detach();
-    // }
-    while (_isRunning) {
-        asio::ip::tcp::socket clientSocket(_context); // Создаем сокет для клиента
-
-        // Принимаем входящее соединение
-        _wsAcceptor.accept(clientSocket);
-
-        boost::beast::flat_buffer buffer;
-        boost::beast::http::request<boost::beast::http::string_body> req;
-        boost::beast::http::read(clientSocket, buffer, req);
-
-        if (boost::beast::websocket::is_upgrade(req)) {
-            auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
-            clientWebSocketPtr->accept(req);
-
-            std::thread([this, clientWebSocketPtr]() {
-                handleWebSocketConnection(clientWebSocketPtr);
-            }).detach();
-        }
-    }
-
-
-}
-
-void Server::handleWebSocketConnection(std::shared_ptr<ws::stream<tcp::socket>> clientWs) {
+    std::string error;
+    std::string token;
     try {
-        tcp::socket serverSocket(_context);
-        serverSocket.connect({ip::make_address("0.0.0.0"), 50010});
-        auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
-        serverWs->handshake("0.0.0.0:50010", "/chat?room_id=123");
-
-        std::thread([this, clientWs, serverWs]() {
-            proxyWebSocketData(*clientWs, *serverWs);
-        }).detach();
-
-        std::thread([this, serverWs, clientWs]() {
-            proxyWebSocketData(*serverWs, *clientWs);
-        }).detach();
-
-    } catch (beast::system_error const& se) {
-        if (se.code() != beast::websocket::error::closed)
-            std::cerr << "Error: " << se.code().message() << std::endl;
-    } catch (std::exception const& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        token = request.at(http::field::authorization);
+    } catch (const std::exception& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+        sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain authorization token", request.version());
+        return;
     }
+    bool verified = _auth.verifyJWT(token, error); //error unused
+
+    if (!verified) {
+        sendErrorResponse(clientSocket, http::status::unauthorized, "Token was not verified", request.version());
+        return;
+    }
+
+    // std::vector<std::string> invitedUsers;
+ 
+    // if (invitedUsers.size() > 5) //нужно будет сделать получше
+    // {
+    //     sendErrorResponse(clientSocket, http::status::bad_request, "Too much users invited, max is 5", request.version());
+    //     return;
+    // }
+    
+    // for (const auto& user : invitedUsers){
+    //     sendInvite(user); //не доделано
+    // }
+
+    std::string room_id = _chat.createRoom();
+    
+    handleWebSocketConnection(clientSocket, room_id);
 }
 
-void Server::handleWebSocketConnection(tcp::socket& clientSocket) {
+void Server::handleConnectToChatRequest(const http::request<http::string_body> &request, asio::ip::tcp::socket &clientSocket){
+    std::string error;
+    nlohmann::json json_body;
+    std::string token;
+    try {
+        token = request.at(http::field::authorization);
+    } catch (const std::exception& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+        sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain authorization token", request.version());
+        return;
+    }
+    bool verified = _auth.verifyJWT(token, error); //error unused
+
+    if (!verified) {
+        sendErrorResponse(clientSocket, http::status::unauthorized, "Token was not verified", request.version());
+        return;
+    }
+    // if (!parseJson(request.body(), json_body, error)) {
+    //     std::cerr << "Error parsing json" << std::endl;
+    //     sendErrorResponse(clientSocket, http::status::bad_request, error, request.version());
+    //     return;
+    // }
+    
+    std::string room_id = request.at("room_id");
+    handleWebSocketConnection(clientSocket, room_id);
+
+}
+
+void Server::sendInvite(const std::string & username)
+{
+}
+
+// void Server::listenWS(){
+//     // tcp::socket socket(_context);
+//     // _wsAcceptor.async_accept(socket,
+//     //     [this, &socket](boost::system::error_code ec) {
+//     //         if (!ec) {
+//     //             // Successfully accepted a WebSocket connection
+//     //             handleWebSocketConnection(std::move(socket));
+//     //         }
+
+//     //         // Your code to handle the next incoming connection
+//     //         listenWS();
+//     //     });
+
+//     while (_isRunning) {
+//         asio::ip::tcp::socket clientSocket(_context); // Создаем сокет для клиента
+//         asio::ip::tcp::endpoint clientEndpoint;
+        
+//         // Принимаем входящее соединение
+//         _wsAcceptor.accept(clientSocket, clientEndpoint);
+        
+//         auto clientSocketPtr = std::make_shared<asio::ip::tcp::socket>(std::move(clientSocket));
+
+//         std::thread([this, clientSocketPtr, &clientEndpoint]() {
+//             handleWebSocketConnection(*clientSocketPtr);
+//         }).detach();
+//     }
+
+//     // tcp::socket socket(_context);
+
+//     // ws::stream<tcp::socket&> wsocket(socket);
+
+// }
+
+void Server::handleWebSocketConnection(tcp::socket& clientSocket, const std::string& room_id) {
     try {
         auto clientWs = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
         clientWs->accept();
@@ -415,7 +425,7 @@ void Server::handleWebSocketConnection(tcp::socket& clientSocket) {
         tcp::socket serverSocket(_context);
         serverSocket.connect({ip::make_address("0.0.0.0"), 50010});
         auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
-        serverWs->handshake("0.0.0.0:50010", "/chat?room_id=123");
+        serverWs->handshake("0.0.0.0:50010", "/chat?room_id="+room_id);
 
         std::thread([this, clientWs, serverWs]() {
             proxyWebSocketData(*clientWs, *serverWs);
