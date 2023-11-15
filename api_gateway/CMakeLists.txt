@@ -16,7 +16,7 @@ set(SOURCE_FILES
     Server.cpp
     DBClient.cpp
     AuthClient.cpp
-
+    ChatClient.cpp
     # DatabaseHandler.pb.cc
     # DatabaseHandler.grpc.pb.cc
     # AuthServer.grpc.pb.cc
@@ -55,13 +55,22 @@ add_library(DatabaseLib STATIC
     DatabaseHandler.pb.cc
     DatabaseHandler.grpc.pb.cc
 )
+
 target_include_directories(DatabaseLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})  # Добавьте эту строку
+
+add_library(ChatLib STATIC
+    ChatServer.pb.cc
+    ChatServer.grpc.pb.cc
+)
+
+target_include_directories(ChatLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})  # Добавьте эту строку
 
 
 # Link libraries to the target
 target_link_libraries(api_gateway
     PRIVATE AuthenticationLib
     PRIVATE DatabaseLib
+    PRIVATE ChatLib
 
     ${CORE_FOUNDATION}
     ${LIBCARES}
