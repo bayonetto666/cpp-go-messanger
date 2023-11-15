@@ -31,11 +31,29 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
     const asio::ip::tcp::endpoint& clientEndpoint) {
     //надо будет как-то красиво сделать потом
     if (ws::is_upgrade(request)) {
+        std::string error;
+        std::string token;
+        try {
+            token = request.at(http::field::authorization);
+        } catch (const std::exception& e) {
+            std::cout << "Error: " << e.what() << std::endl;
+            sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain authorization token", request.version());
+            return;
+        }
+        bool verified = _auth.verifyJWT(token, error);
+        if(!error.empty()){
+            sendErrorResponse(clientSocket, http::status::unknown, error, request.version());
+        }
+        if (!verified)
+        {
+            sendErrorResponse(clientSocket, http::status::unauthorized, "", request.version());
+            return;
+        }
         if (request.target() == "/chat/new"){
             auto room_id = std::make_shared<std::string>(_chat.createRoom());
             auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
             clientWebSocketPtr->accept(request);
-
+            
             std::thread([this, clientWebSocketPtr, room_id]() {
                 handleWebSocketConnection(clientWebSocketPtr, *room_id);
             }).detach();        
@@ -363,10 +381,11 @@ void Server::proxyWebSocketData(ws::stream<tcp::socket>& fromWs, ws::stream<tcp:
             fromWs.text(fromWs.got_text());
             toWs.write(buffer.data());
         } catch (beast::system_error const& se) {
-            if (se.code() == beast::websocket::error::closed) {
+            if (se.code() == ws::error::closed || se.code() == asio::error::operation_aborted) {
                 break;
             } else {
                 std::cerr << "Error: " << se.code().message() << std::endl;
+                break;
             }
         } catch (std::exception const& e) {
             std::cerr << "Error: " << e.what() << std::endl;

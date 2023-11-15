@@ -35,23 +35,23 @@ ChatService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   : channel_(channel), rpcmethod_CreateRoom_(ChatService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc::Status ChatService::Stub::CreateRoom(::grpc::ClientContext* context, const ::chat::RoomRequest& request, ::chat::RoomResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::chat::RoomRequest, ::chat::RoomResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CreateRoom_, context, request, response);
+::grpc::Status ChatService::Stub::CreateRoom(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::chat::RoomResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::google::protobuf::Empty, ::chat::RoomResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CreateRoom_, context, request, response);
 }
 
-void ChatService::Stub::async::CreateRoom(::grpc::ClientContext* context, const ::chat::RoomRequest* request, ::chat::RoomResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::chat::RoomRequest, ::chat::RoomResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateRoom_, context, request, response, std::move(f));
+void ChatService::Stub::async::CreateRoom(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::chat::RoomResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::google::protobuf::Empty, ::chat::RoomResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateRoom_, context, request, response, std::move(f));
 }
 
-void ChatService::Stub::async::CreateRoom(::grpc::ClientContext* context, const ::chat::RoomRequest* request, ::chat::RoomResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+void ChatService::Stub::async::CreateRoom(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::chat::RoomResponse* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateRoom_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>* ChatService::Stub::PrepareAsyncCreateRoomRaw(::grpc::ClientContext* context, const ::chat::RoomRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::chat::RoomResponse, ::chat::RoomRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CreateRoom_, context, request);
+::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>* ChatService::Stub::PrepareAsyncCreateRoomRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::chat::RoomResponse, ::google::protobuf::Empty, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CreateRoom_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>* ChatService::Stub::AsyncCreateRoomRaw(::grpc::ClientContext* context, const ::chat::RoomRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>* ChatService::Stub::AsyncCreateRoomRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncCreateRoomRaw(context, request, cq);
   result->StartCall();
@@ -62,10 +62,10 @@ ChatService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       ChatService_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< ChatService::Service, ::chat::RoomRequest, ::chat::RoomResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< ChatService::Service, ::google::protobuf::Empty, ::chat::RoomResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](ChatService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::chat::RoomRequest* req,
+             const ::google::protobuf::Empty* req,
              ::chat::RoomResponse* resp) {
                return service->CreateRoom(ctx, req, resp);
              }, this)));
@@ -74,7 +74,7 @@ ChatService::Service::Service() {
 ChatService::Service::~Service() {
 }
 
-::grpc::Status ChatService::Service::CreateRoom(::grpc::ServerContext* context, const ::chat::RoomRequest* request, ::chat::RoomResponse* response) {
+::grpc::Status ChatService::Service::CreateRoom(::grpc::ServerContext* context, const ::google::protobuf::Empty* request, ::chat::RoomResponse* response) {
   (void) context;
   (void) request;
   (void) response;

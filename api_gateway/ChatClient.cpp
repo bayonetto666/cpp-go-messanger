@@ -6,19 +6,22 @@ ChatClient::ChatClient(const std::string &server_address)  : channel_(grpc::Crea
 
 std::string ChatClient::createRoom()
 {
-    chat::RoomRequest request;
-
-    std::string room_id = "123"; //нужно будет добавить генерацию id
-    request.set_room_id(room_id); 
+    google::protobuf::Empty request;
 
     chat::RoomResponse response;
     grpc::ClientContext context;
 
     grpc::Status status = stub_->CreateRoom(&context, request, &response);
+    
+    std::string room_id = response.room_id();
 
     if (!status.ok())
     {
-        /* code */
+        std::cout << "createRoom status error: " << status.error_message() << std::endl;
+    }
+    if (!response.error().empty())
+    {
+        std::cout << "createRoom generating error: " << response.error() << std::endl;
     }
     
     return room_id;

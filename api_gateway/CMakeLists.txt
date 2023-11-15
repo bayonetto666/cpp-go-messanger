@@ -31,7 +31,7 @@ include_directories(
     /opt/homebrew/Cellar/openssl@3/3.1.4/include
     /opt/homebrew/Cellar/nlohmann-json/3.11.2/include
     /Users/kiryl/.local/include
-
+    /Users/kiryl/.local/include/google
 )
 
 link_directories(

@@ -35,45 +35,41 @@ class ChatService final {
   class StubInterface {
    public:
     virtual ~StubInterface() {}
-    virtual ::grpc::Status CreateRoom(::grpc::ClientContext* context, const ::chat::RoomRequest& request, ::chat::RoomResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::chat::RoomResponse>> AsyncCreateRoom(::grpc::ClientContext* context, const ::chat::RoomRequest& request, ::grpc::CompletionQueue* cq) {
+    virtual ::grpc::Status CreateRoom(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::chat::RoomResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::chat::RoomResponse>> AsyncCreateRoom(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::chat::RoomResponse>>(AsyncCreateRoomRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::chat::RoomResponse>> PrepareAsyncCreateRoom(::grpc::ClientContext* context, const ::chat::RoomRequest& request, ::grpc::CompletionQueue* cq) {
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::chat::RoomResponse>> PrepareAsyncCreateRoom(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::chat::RoomResponse>>(PrepareAsyncCreateRoomRaw(context, request, cq));
     }
-    //   rpc EnterRoom (RoomEntryRequest) returns (RoomResponse);
-    //   rpc SendMessage (MessageRequest) returns (MessageResponse);
     class async_interface {
      public:
       virtual ~async_interface() {}
-      virtual void CreateRoom(::grpc::ClientContext* context, const ::chat::RoomRequest* request, ::chat::RoomResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void CreateRoom(::grpc::ClientContext* context, const ::chat::RoomRequest* request, ::chat::RoomResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      //   rpc EnterRoom (RoomEntryRequest) returns (RoomResponse);
-      //   rpc SendMessage (MessageRequest) returns (MessageResponse);
+      virtual void CreateRoom(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::chat::RoomResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void CreateRoom(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::chat::RoomResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
     class async_interface* experimental_async() { return async(); }
    private:
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::chat::RoomResponse>* AsyncCreateRoomRaw(::grpc::ClientContext* context, const ::chat::RoomRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::chat::RoomResponse>* PrepareAsyncCreateRoomRaw(::grpc::ClientContext* context, const ::chat::RoomRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::chat::RoomResponse>* AsyncCreateRoomRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::chat::RoomResponse>* PrepareAsyncCreateRoomRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
-    ::grpc::Status CreateRoom(::grpc::ClientContext* context, const ::chat::RoomRequest& request, ::chat::RoomResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>> AsyncCreateRoom(::grpc::ClientContext* context, const ::chat::RoomRequest& request, ::grpc::CompletionQueue* cq) {
+    ::grpc::Status CreateRoom(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::chat::RoomResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>> AsyncCreateRoom(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>>(AsyncCreateRoomRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>> PrepareAsyncCreateRoom(::grpc::ClientContext* context, const ::chat::RoomRequest& request, ::grpc::CompletionQueue* cq) {
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>> PrepareAsyncCreateRoom(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>>(PrepareAsyncCreateRoomRaw(context, request, cq));
     }
     class async final :
       public StubInterface::async_interface {
      public:
-      void CreateRoom(::grpc::ClientContext* context, const ::chat::RoomRequest* request, ::chat::RoomResponse* response, std::function<void(::grpc::Status)>) override;
-      void CreateRoom(::grpc::ClientContext* context, const ::chat::RoomRequest* request, ::chat::RoomResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void CreateRoom(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::chat::RoomResponse* response, std::function<void(::grpc::Status)>) override;
+      void CreateRoom(::grpc::ClientContext* context, const ::google::protobuf::Empty* request, ::chat::RoomResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -85,8 +81,8 @@ class ChatService final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class async async_stub_{this};
-    ::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>* AsyncCreateRoomRaw(::grpc::ClientContext* context, const ::chat::RoomRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>* PrepareAsyncCreateRoomRaw(::grpc::ClientContext* context, const ::chat::RoomRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>* AsyncCreateRoomRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::chat::RoomResponse>* PrepareAsyncCreateRoomRaw(::grpc::ClientContext* context, const ::google::protobuf::Empty& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_CreateRoom_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
@@ -95,9 +91,7 @@ class ChatService final {
    public:
     Service();
     virtual ~Service();
-    virtual ::grpc::Status CreateRoom(::grpc::ServerContext* context, const ::chat::RoomRequest* request, ::chat::RoomResponse* response);
-    //   rpc EnterRoom (RoomEntryRequest) returns (RoomResponse);
-    //   rpc SendMessage (MessageRequest) returns (MessageResponse);
+    virtual ::grpc::Status CreateRoom(::grpc::ServerContext* context, const ::google::protobuf::Empty* request, ::chat::RoomResponse* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_CreateRoom : public BaseClass {
@@ -111,11 +105,11 @@ class ChatService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CreateRoom(::grpc::ServerContext* /*context*/, const ::chat::RoomRequest* /*request*/, ::chat::RoomResponse* /*response*/) override {
+    ::grpc::Status CreateRoom(::grpc::ServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::chat::RoomResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestCreateRoom(::grpc::ServerContext* context, ::chat::RoomRequest* request, ::grpc::ServerAsyncResponseWriter< ::chat::RoomResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestCreateRoom(::grpc::ServerContext* context, ::google::protobuf::Empty* request, ::grpc::ServerAsyncResponseWriter< ::chat::RoomResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -127,25 +121,25 @@ class ChatService final {
    public:
     WithCallbackMethod_CreateRoom() {
       ::grpc::Service::MarkMethodCallback(0,
-          new ::grpc::internal::CallbackUnaryHandler< ::chat::RoomRequest, ::chat::RoomResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::google::protobuf::Empty, ::chat::RoomResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::chat::RoomRequest* request, ::chat::RoomResponse* response) { return this->CreateRoom(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::google::protobuf::Empty* request, ::chat::RoomResponse* response) { return this->CreateRoom(context, request, response); }));}
     void SetMessageAllocatorFor_CreateRoom(
-        ::grpc::MessageAllocator< ::chat::RoomRequest, ::chat::RoomResponse>* allocator) {
+        ::grpc::MessageAllocator< ::google::protobuf::Empty, ::chat::RoomResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::chat::RoomRequest, ::chat::RoomResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::google::protobuf::Empty, ::chat::RoomResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_CreateRoom() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CreateRoom(::grpc::ServerContext* /*context*/, const ::chat::RoomRequest* /*request*/, ::chat::RoomResponse* /*response*/) override {
+    ::grpc::Status CreateRoom(::grpc::ServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::chat::RoomResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* CreateRoom(
-      ::grpc::CallbackServerContext* /*context*/, const ::chat::RoomRequest* /*request*/, ::chat::RoomResponse* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::chat::RoomResponse* /*response*/)  { return nullptr; }
   };
   typedef WithCallbackMethod_CreateRoom<Service > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
@@ -161,7 +155,7 @@ class ChatService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CreateRoom(::grpc::ServerContext* /*context*/, const ::chat::RoomRequest* /*request*/, ::chat::RoomResponse* /*response*/) override {
+    ::grpc::Status CreateRoom(::grpc::ServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::chat::RoomResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -178,7 +172,7 @@ class ChatService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CreateRoom(::grpc::ServerContext* /*context*/, const ::chat::RoomRequest* /*request*/, ::chat::RoomResponse* /*response*/) override {
+    ::grpc::Status CreateRoom(::grpc::ServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::chat::RoomResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -201,7 +195,7 @@ class ChatService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status CreateRoom(::grpc::ServerContext* /*context*/, const ::chat::RoomRequest* /*request*/, ::chat::RoomResponse* /*response*/) override {
+    ::grpc::Status CreateRoom(::grpc::ServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::chat::RoomResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -216,10 +210,10 @@ class ChatService final {
     WithStreamedUnaryMethod_CreateRoom() {
       ::grpc::Service::MarkMethodStreamed(0,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::chat::RoomRequest, ::chat::RoomResponse>(
+          ::google::protobuf::Empty, ::chat::RoomResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::chat::RoomRequest, ::chat::RoomResponse>* streamer) {
+                     ::google::protobuf::Empty, ::chat::RoomResponse>* streamer) {
                        return this->StreamedCreateRoom(context,
                          streamer);
                   }));
@@ -228,12 +222,12 @@ class ChatService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status CreateRoom(::grpc::ServerContext* /*context*/, const ::chat::RoomRequest* /*request*/, ::chat::RoomResponse* /*response*/) override {
+    ::grpc::Status CreateRoom(::grpc::ServerContext* /*context*/, const ::google::protobuf::Empty* /*request*/, ::chat::RoomResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedCreateRoom(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::chat::RoomRequest,::chat::RoomResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedCreateRoom(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::google::protobuf::Empty,::chat::RoomResponse>* server_unary_streamer) = 0;
   };
   typedef WithStreamedUnaryMethod_CreateRoom<Service > StreamedUnaryService;
   typedef Service SplitStreamedService;

@@ -1,34 +1,15 @@
 syntax = "proto3";
+import "google/protobuf/empty.proto";
 
 option go_package = "github.com/bayonetto666/messanger/protos";
 
 package chat;
 
 service ChatService {
-  rpc CreateRoom (RoomRequest) returns (RoomResponse);
-//   rpc EnterRoom (RoomEntryRequest) returns (RoomResponse);
-//   rpc SendMessage (MessageRequest) returns (MessageResponse);
+  rpc CreateRoom (google.protobuf.Empty) returns (RoomResponse);
 }
-
-message RoomRequest {
-  string room_id = 1;
-}
-
-// message RoomEntryRequest {
-//   string room_id = 1;
-//   string user_id = 2;
-// }
-
-// message MessageRequest {
-//   string room_id = 1;
-//   string user_id = 2;
-//   string message = 3;
-// }
 
 message RoomResponse {
-  string message = 1;
+  string room_id = 1;
+  string error = 2;
 }
-
-// message MessageResponse {
-//   string message = 1;
-// }
