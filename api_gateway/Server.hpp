@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <thread>
+#include <future>
 
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
@@ -57,5 +58,9 @@ private:
 
     void handleWebSocketConnection(std::shared_ptr<ws::stream<tcp::socket>> clientWs,const std::string& room_id);
     // void proxyData(ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs);
-    void proxyWebSocketData(ws::stream<tcp::socket>& fromWs, ws::stream<tcp::socket>& toWs);
+    // void proxyWebSocketData(ws::stream<tcp::socket>& fromWs, ws::stream<tcp::socket>& toWs);
+    void proxyWebSocketData(ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs);
+
+    
+
 };

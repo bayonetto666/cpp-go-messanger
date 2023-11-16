@@ -1,5 +1,7 @@
 package main
 
+//TODO: fix rooms
+
 import (
 	"context"
 	"errors"
