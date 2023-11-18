@@ -22,8 +22,8 @@ public:
 
 private:
   asio::io_context& _context;
-  ws::stream<tcp::socket> _clientWs;
-  ws::stream<tcp::socket> _serverWs;
+  ws::stream<tcp::socket>& _clientWs;
+  ws::stream<tcp::socket>& _serverWs;
 
   beast::flat_buffer _serverBuffer;
   beast::flat_buffer _clientBuffer;

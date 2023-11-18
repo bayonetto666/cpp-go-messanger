@@ -1,12 +1,15 @@
 #include "websocket_proxy.hpp"
 
 websocket_proxy::websocket_proxy(asio::io_context& context, ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs) :
-_context(context), _clientWs(std::move(clientWs)), _serverWs(std::move(serverWs))
-{}
+_context(context), _clientWs(clientWs), _serverWs(serverWs)
+{
+  std::cout << "ctor\n";
+}
 
 void websocket_proxy::run(){
   _readFromClient();
   _readFromServer();
+  std::cout << "running\n";
 }
 
 void websocket_proxy::close() {
@@ -80,3 +83,12 @@ void websocket_proxy::_writeToClient(){
     }
   );
 }
+
+
+/*[self = shared_from_this()](const boost::system::error_code& ec, std::size_t bytes_transferred) {
+    if (auto ptr = self.lock()) {
+        // Use 'ptr' safely within this scope
+    } else {
+        // The object has been destroyed; handle accordingly
+    }
+}*/

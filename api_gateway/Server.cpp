@@ -358,9 +358,11 @@ void Server::handleWebSocketConnection(std::shared_ptr<ws::stream<tcp::socket>> 
         auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
         serverWs->handshake("0.0.0.0:50010", "/chat?room_id=" + room_id);
 
-        websocket_proxy proxy(_context, *clientWs, *serverWs);
-        proxy.run();
+        auto proxy = std::make_shared<websocket_proxy>(_context, *clientWs, *serverWs);
+        proxy->run();
         
+        _context.run();
+
     } catch (beast::system_error const& se) {
         if (se.code() != beast::websocket::error::closed)
             std::cerr << "Error: " << se.code().message() << std::endl;
