@@ -81,6 +81,7 @@ func (c *ChatRoom) AddConnection(conn *Connection) {
 
 func (c *ChatRoom) RemoveConnection(conn *Connection) {
 	c.connMutex.Lock()
+	fmt.Println("Connection removed")
 	defer c.connMutex.Unlock()
 	delete(c.connections, conn)
 	close(conn.send)

@@ -351,25 +351,16 @@ void Server::handleGetMessagesRequest(const http::request<http::string_body>& re
 }
 
 void Server::handleWebSocketConnection(std::shared_ptr<ws::stream<tcp::socket>> clientWs,const std::string& room_id) {
-    std::shared_ptr<ws::stream<tcp::socket>> serverWs;
     try {
         tcp::socket serverSocket(_context);
         serverSocket.connect({ip::make_address("0.0.0.0"), 50010});
         // auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
-        serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
+        auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
         serverWs->handshake("0.0.0.0:50010", "/chat?room_id=" + room_id);
 
-        // std::thread([this, clientWs, serverWs]() {
-        //     proxyWebSocketData(*clientWs, *serverWs);
-        // }).detach();
-
-        // std::thread([this, serverWs, clientWs]() {
-        //     proxyWebSocketData(*serverWs, *clientWs);
-        // }).detach();
-        std::thread([clientWs, serverWs, this](){
-             proxyWebSocketData(*clientWs, *serverWs);
-        }).detach();
-
+        websocket_proxy proxy(_context, *clientWs, *serverWs);
+        proxy.run();
+        
     } catch (beast::system_error const& se) {
         if (se.code() != beast::websocket::error::closed)
             std::cerr << "Error: " << se.code().message() << std::endl;
@@ -377,95 +368,3 @@ void Server::handleWebSocketConnection(std::shared_ptr<ws::stream<tcp::socket>> 
         std::cerr << "Error: " << e.what() << std::endl;
     }
 }
-
-void Server::proxyWebSocketData(ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs) {
-    try {
-        while (true) {
-            // Создаем буфер для хранения данных
-            beast::flat_buffer buffer;
-
-            // Читаем сообщение от клиента
-            clientWs.read(buffer);
-
-            // Перенаправляем сообщение клиента на сервер
-            serverWs.write(buffer.data());
-
-            // Очищаем буфер
-            buffer.consume(buffer.size());
-
-            // Читаем сообщение от сервера
-            serverWs.read(buffer);
-
-            // Перенаправляем сообщение сервера клиенту
-            clientWs.write(buffer.data());
-
-            // Очищаем буфер
-            buffer.consume(buffer.size());
-        }
-    } catch (beast::system_error const& se) {
-        if (se.code() != beast::websocket::error::closed)
-            std::cerr << "Error: " << se.code().message() << std::endl;
-    } catch (std::exception const& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
-}
-// void Server::proxyWebSocketData(ws::stream<tcp::socket>& fromWs, ws::stream<tcp::socket>& toWs) {
-//     for (;;) {
-//         try {
-//             beast::flat_buffer buffer;
-//             fromWs.read(buffer);
-//             fromWs.text(fromWs.got_text());
-//             toWs.write(buffer.data());
-//         } catch (beast::system_error const& se) {
-//             if (se.code() == ws::error::closed || se.code() == asio::error::operation_aborted) {
-//                 break;
-//             } else {
-//                 std::cerr << "Error: " << se.code().message() << std::endl;
-//                 break;
-//             }
-//         } catch (std::exception const& e) {
-//             std::cerr << "Error: " << e.what() << std::endl;
-//         }
-//     }
-    
-// }
-// void Server::proxyData(ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs){
-//     beast::flat_buffer clientBuffer;
-//     beast::flat_buffer serverBuffer;
-
-//     // Read from client and write to server
-//     clientWs.async_read(clientBuffer, 
-//         [this, &clientBuffer, &serverWs, &clientWs](beast::error_code ec, std::size_t bytes_transferred){
-//             if (ec == ws::error::closed) {
-//                 // Handle WebSocket connection closure from the client
-//                 return;
-//             }
-
-//             serverWs.async_write(clientBuffer.data(), 
-//                 [this, &clientBuffer, &serverWs, &clientWs](beast::error_code ec, std::size_t bytes_transferred){
-//                     if (ec == ws::error::closed) {
-//                         // Handle WebSocket connection closure from the server
-//                         return;
-//                     }
-//                     proxyData(clientWs, serverWs);
-//                 });
-//         });
-
-//     // Read from server and write to client
-//     serverWs.async_read(serverBuffer, 
-//         [this, &serverBuffer, &serverWs, &clientWs](beast::error_code ec, std::size_t bytes_transferred){
-//             if (ec == ws::error::closed) {
-//                 // Handle WebSocket connection closure from the server
-//                 return;
-//             }
-
-//             clientWs.async_write(serverBuffer.data(), 
-//                 [this, &serverBuffer, &serverWs, &clientWs](beast::error_code ec, std::size_t bytes_transferred){
-//                     if (ec == ws::error::closed) {
-//                         // Handle WebSocket connection closure from the client
-//                         return;
-//                     }
-//                     proxyData(clientWs, serverWs);
-//                 });
-//         });
-// }

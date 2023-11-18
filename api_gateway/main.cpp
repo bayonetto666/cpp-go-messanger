@@ -3,6 +3,6 @@
 #include "Server.hpp"
 
 int main() {
-    Server server;
-    server.listen();
+  std::shared_ptr<Server> server = std::make_shared<Server>();
+  server->listen();
 }

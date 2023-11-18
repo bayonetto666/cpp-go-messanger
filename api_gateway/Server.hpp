@@ -12,6 +12,7 @@
 #include "AuthClient.hpp"
 #include "DBClient.hpp"
 #include "ChatClient.hpp"
+#include "websocket_proxy.hpp"
 
 namespace asio = boost::asio;
 namespace ip = asio::ip;
@@ -57,10 +58,4 @@ private:
     void handleClient(asio::ip::tcp::socket& clientSocket, const asio::ip::tcp::endpoint& clientEndpoint);
 
     void handleWebSocketConnection(std::shared_ptr<ws::stream<tcp::socket>> clientWs,const std::string& room_id);
-    // void proxyData(ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs);
-    // void proxyWebSocketData(ws::stream<tcp::socket>& fromWs, ws::stream<tcp::socket>& toWs);
-    void proxyWebSocketData(ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs);
-
-    
-
 };

@@ -17,6 +17,7 @@ set(SOURCE_FILES
     DBClient.cpp
     AuthClient.cpp
     ChatClient.cpp
+    websocket_proxy.cpp 
     # DatabaseHandler.pb.cc
     # DatabaseHandler.grpc.pb.cc
     # AuthServer.grpc.pb.cc
