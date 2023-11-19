@@ -58,4 +58,5 @@ private:
     void handleClient(asio::ip::tcp::socket& clientSocket, const asio::ip::tcp::endpoint& clientEndpoint);
 
     void handleWebSocketConnection(std::shared_ptr<ws::stream<tcp::socket>> clientWs,const std::string& room_id);
+    void handleWebSocketConnection(ws::stream<tcp::socket>& clientWs,const std::string& room_id);
 };

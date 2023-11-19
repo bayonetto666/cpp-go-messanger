@@ -1,9 +1,17 @@
 #include "websocket_proxy.hpp"
 
 websocket_proxy::websocket_proxy(asio::io_context& context, ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs) :
-_context(context), _clientWs(clientWs), _serverWs(serverWs)
+_context(context), _clientWs(std::move(clientWs)), _serverWs(std::move(serverWs))
 {
   std::cout << "ctor\n";
+}
+// websocket_proxy::websocket_proxy(asio::io_context& context, ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs) :
+// _context(context), _clientWs(clientWs), _serverWs(serverWs)
+// {
+//   std::cout << "ctor\n";
+// }
+websocket_proxy::~websocket_proxy(){
+  std::cout << "dtor\n";
 }
 
 void websocket_proxy::run(){

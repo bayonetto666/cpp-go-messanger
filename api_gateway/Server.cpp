@@ -11,7 +11,7 @@ Server::Server() : _context(), _serverSocket(_context),
 // }
 
 void Server::listen(){
-    _context.run();
+    // _context.run();
     while (_isRunning) {
         asio::ip::tcp::socket clientSocket(_context); // Создаем сокет для клиента
         asio::ip::tcp::endpoint clientEndpoint;
@@ -25,6 +25,19 @@ void Server::listen(){
             handleClient(*clientSocketPtr, clientEndpoint);
         }).detach();
     }
+}
+
+void Server::handleClient(asio::ip::tcp::socket& clientSocket, const asio::ip::tcp::endpoint& clientEndpoint){
+    // Теперь можно читать данные из clientSocket
+    beast::flat_buffer buffer;
+    http::request<http::string_body> request;
+    http::request_parser<http::string_body> parser;
+    parser.eager(true);
+    
+    beast::http::read(clientSocket, buffer, parser);
+    request = parser.get();
+    
+    handleRequest(request, clientSocket, clientEndpoint);
 }
 
 void Server::handleRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket,
@@ -55,8 +68,9 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
             clientWebSocketPtr->accept(request);
             
             std::thread([this, clientWebSocketPtr, room_id]() {
-                handleWebSocketConnection(clientWebSocketPtr, *room_id);
-            }).detach();        
+                handleWebSocketConnection(*clientWebSocketPtr, *room_id);
+            }).join();
+            _context.run();        
         }
         else if (request.target() == "/chat/connect"){
             auto room_id = std::make_shared<std::string>(request.at("room_id"));
@@ -64,8 +78,9 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
             clientWebSocketPtr->accept(request);
 
             std::thread([this, clientWebSocketPtr, room_id]() {
-                handleWebSocketConnection(clientWebSocketPtr, *room_id);
-            }).detach();     
+                handleWebSocketConnection(*clientWebSocketPtr, *room_id);
+            }).join();
+            _context.run();        
         }
         
     }
@@ -212,19 +227,6 @@ void Server::sendErrorResponse(asio::ip::tcp::socket& clientSocket, const http::
     http::write(clientSocket, response);
 }
 
-void Server::handleClient(asio::ip::tcp::socket& clientSocket, const asio::ip::tcp::endpoint& clientEndpoint){
-    // Теперь можно читать данные из clientSocket
-    beast::flat_buffer buffer;
-    http::request<http::string_body> request;
-    http::request_parser<http::string_body> parser;
-    parser.eager(true);
-    
-    beast::http::read(clientSocket, buffer, parser);
-    request = parser.get();
-    
-    handleRequest(request, clientSocket, clientEndpoint);
-}
-
 void Server::handleRegisterRequest(const http::request<http::string_body> &request, asio::ip::tcp::socket &clientSocket)
 {
     nlohmann::json json_body;
@@ -350,19 +352,17 @@ void Server::handleGetMessagesRequest(const http::request<http::string_body>& re
 //    }
 }
 
-void Server::handleWebSocketConnection(std::shared_ptr<ws::stream<tcp::socket>> clientWs,const std::string& room_id) {
+void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs,const std::string& room_id) {
     try {
         tcp::socket serverSocket(_context);
         serverSocket.connect({ip::make_address("0.0.0.0"), 50010});
-        // auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
         auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
         serverWs->handshake("0.0.0.0:50010", "/chat?room_id=" + room_id);
 
-        auto proxy = std::make_shared<websocket_proxy>(_context, *clientWs, *serverWs);
+        auto proxy = std::make_shared<websocket_proxy>(_context, clientWs, *serverWs);
+        
         proxy->run();
         
-        _context.run();
-
     } catch (beast::system_error const& se) {
         if (se.code() != beast::websocket::error::closed)
             std::cerr << "Error: " << se.code().message() << std::endl;
