@@ -64,6 +64,7 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
     bool verified = _auth.verifyJWT(token, error);
     if(!error.empty()){
         sendErrorResponse(clientSocket, http::status::unknown, error, request.version());
+        return;
     }
     if (!verified)
     {
@@ -82,11 +83,7 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
             auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
             clientWebSocketPtr->accept(request);
             
-            std::thread([this, clientWebSocketPtr, &username, &room_id]() {
-                handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
-            }).join();
-
-            // _context.run();
+            handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
         }
         else if (request.target() == "/chat/connect"){
             auto room_id = request.at("room_id");
@@ -98,11 +95,7 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
             auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
             clientWebSocketPtr->accept(request);
 
-            std::thread([this, clientWebSocketPtr, &username, &room_id]() {
-                handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
-            }).join();
-            // _context.run();
-
+            handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
         }
         
     }
@@ -386,7 +379,6 @@ void Server::handleGetMessagesRequest(const http::request<http::string_body>& re
 
 void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs, const std::string username, const std::string room_id){
   //TODO: handle lifetime
-  //TODO: fix not working connections after closed connection
     try {
         tcp::socket serverSocket(_context);
         serverSocket.connect({ip::make_address("0.0.0.0"), 50010});
