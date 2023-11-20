@@ -66,9 +66,11 @@ type ChatRoom struct {
 }
 
 func NewChatRoom(roomID string) *ChatRoom {
+	fmt.Printf("New chat room %v", roomID)
 	return &ChatRoom{
 		ID:           roomID,
 		connections:  make(map[*Connection]struct{}),
+		connMutex:    sync.Mutex{},
 		messageQueue: make(chan []byte),
 	}
 }
@@ -76,15 +78,15 @@ func NewChatRoom(roomID string) *ChatRoom {
 func (c *ChatRoom) AddConnection(conn *Connection) {
 	c.connMutex.Lock()
 	defer c.connMutex.Unlock()
-	c.connections[conn] = struct{}{}
+	c.connections[conn] = struct{}{} //?
 }
 
 func (c *ChatRoom) RemoveConnection(conn *Connection) {
 	c.connMutex.Lock()
 	fmt.Println("Connection removed")
 	defer c.connMutex.Unlock()
-	delete(c.connections, conn)
-	close(conn.send)
+	delete(c.connections, conn) //?
+	close(conn.send)            //?
 }
 
 func (c *ChatRoom) BroadcastMessage(message []byte) {
@@ -142,6 +144,8 @@ func (c *Controller) EnterRoom(roomID string, connection *Connection) {
 	room, exists := c.chatRooms[roomID]
 	if !exists {
 		fmt.Printf("Room %s does not exist\n", roomID)
+		room.RemoveConnection(connection)
+		// connection.conn.Close()
 		return
 	}
 
@@ -195,10 +199,12 @@ func (c *Controller) HandleConnection(w http.ResponseWriter, r *http.Request) {
 				message := string(p)
 				fmt.Printf("Received text message: %s\n", message)
 				c.messageQueue <- []byte(message)
-			case websocket.BinaryMessage:
-				// Обработка бинарных сообщений
 			case websocket.CloseMessage:
 				// Обработка закрытия соединения
+				c.chatRooms[roomID].RemoveConnection(connection)
+				return
+			case websocket.BinaryMessage:
+				// Обработка бинарных сообщений
 			case websocket.PingMessage:
 				// Обработка пинг-сообщений
 			case websocket.PongMessage:
@@ -272,6 +278,7 @@ func main() {
 		<-interrupt
 		close(controller.messageQueue)
 		wg.Done()
+		os.Exit(0)
 	}()
 
 	fmt.Println("WebSocket server started on :50010")

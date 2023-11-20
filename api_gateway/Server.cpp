@@ -42,26 +42,35 @@ void Server::handleClient(asio::ip::tcp::socket& clientSocket, const asio::ip::t
 
 void Server::handleRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket,
     const asio::ip::tcp::endpoint& clientEndpoint) {
+  if(request.method() == http::verb::post && request.target() == "/auth/register") {
+    handleRegisterRequest(request, clientSocket); //done
+    return;
+  }
+  if(request.method() == http::verb::post && request.target() == "/auth/login") {
+    handleLoginRequest(request, clientSocket); //done
+    return;
+  }
     //надо будет как-то красиво сделать потом
+    std::string error;
+    std::string token;
+    try {
+      //TODO: get rid of try/catch here 
+        token = request.at(http::field::authorization);
+    } catch (const std::exception& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+        sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain authorization token", request.version());
+        return;
+    }
+    bool verified = _auth.verifyJWT(token, error);
+    if(!error.empty()){
+        sendErrorResponse(clientSocket, http::status::unknown, error, request.version());
+    }
+    if (!verified)
+    {
+        sendErrorResponse(clientSocket, http::status::unauthorized, "", request.version());
+        return;
+    }
     if (ws::is_upgrade(request)) {
-        std::string error;
-        std::string token;
-        try {
-            token = request.at(http::field::authorization);
-        } catch (const std::exception& e) {
-            std::cout << "Error: " << e.what() << std::endl;
-            sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain authorization token", request.version());
-            return;
-        }
-        bool verified = _auth.verifyJWT(token, error);
-        if(!error.empty()){
-            sendErrorResponse(clientSocket, http::status::unknown, error, request.version());
-        }
-        if (!verified)
-        {
-            sendErrorResponse(clientSocket, http::status::unauthorized, "", request.version());
-            return;
-        }
         if (request.target() == "/chat/new"){
             auto room_id = std::make_shared<std::string>(_chat.createRoom());
             auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
@@ -90,13 +99,6 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
     else if (request.method() == http::verb::get && request.target() == "/messages") {
         handleGetMessagesRequest(request, clientSocket);
     }
-    else if(request.method() == http::verb::post && request.target() == "/auth/register") {
-        handleRegisterRequest(request, clientSocket); //done
-    }
-    else if(request.method() == http::verb::post && request.target() == "/auth/login") {
-        handleLoginRequest(request, clientSocket); //done
-    }
-
 }
 
 void Server::handleSendMessageRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket, const asio::ip::tcp::endpoint& clientEndpoint) {
@@ -353,6 +355,7 @@ void Server::handleGetMessagesRequest(const http::request<http::string_body>& re
 }
 
 void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs,const std::string& room_id) {
+  //TODO: handle lifetime
     try {
         tcp::socket serverSocket(_context);
         serverSocket.connect({ip::make_address("0.0.0.0"), 50010});
