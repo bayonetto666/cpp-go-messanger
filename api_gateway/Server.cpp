@@ -10,30 +10,23 @@ Server::Server() : _context(), _serverSocket(_context),
 //     _serverSocket.close(); // Закройте серверный сокет, чтобы прервать ожидание accept
 // }
 void Server::run() {
-    _context.run();
+  _context.run();
 }
 
-void Server::listen(){
-    // _context.run();
-    while (_isRunning) {
-        asio::ip::tcp::socket clientSocket(_context); // Создаем сокет для клиента
-        // asio::ip::tcp::endpoint clientEndpoint;
-        
-        // Принимаем входящее соединение
-        _acceptor.accept(clientSocket);
-        
-        auto clientSocketPtr = std::make_shared<asio::ip::tcp::socket>(std::move(clientSocket));
+void Server::listen() {
+  std::shared_ptr<asio::ip::tcp::socket> clientSocket = std::make_shared<asio::ip::tcp::socket>(_context);
 
-        std::thread([this, clientSocketPtr]() {
-            handleClient(*clientSocketPtr);
-        }).detach();
-        
-        // std::thread([this, clientSocketPtr, &clientEndpoint]() {
-        //     handleClient(*clientSocketPtr, clientEndpoint);
-        // }).detach();
+  _acceptor.async_accept(*clientSocket, [this, clientSocket](const boost::system::error_code ec){
+    if (!ec) {
+      handleClient(*clientSocket);
+      // После обработки одного клиента снова начинаем ждать новых подключений
+      listen();
+    } else {
+      std::cout << "accept error: " << ec.message() << std::endl;
     }
-
+  });
 }
+
 
 void Server::handleClient(asio::ip::tcp::socket& clientSocket) {
     // Теперь можно читать данные из clientSocket

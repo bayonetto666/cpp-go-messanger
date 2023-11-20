@@ -9,6 +9,6 @@ int main() {
   // }).detach();
   server->listen();
 
-    // Run the IO context in the main thread
-    // server->run();
+  // Run the IO context in the main thread
+  server->run();
 }
