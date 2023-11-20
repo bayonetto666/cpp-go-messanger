@@ -1,17 +1,51 @@
 package main
 
 //TODO: handle empty message
-//TODO: remake creating room
-//TODO: implement gRPC
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"sync"
 
+	protos "protos"
+
+	empty "github.com/golang/protobuf/ptypes/empty"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"google.golang.org/grpc"
 )
+
+func generateRoomID() (string, error) {
+	uuidObj, err := uuid.NewRandom()
+	if err != nil {
+		return "", err
+	}
+
+	return uuidObj.String(), nil
+}
+
+type gRPCServer struct {
+	protos.UnimplementedChatServiceServer
+}
+
+func (s *gRPCServer) CreateRoom(ctx context.Context, req *empty.Empty) (*protos.RoomResponse, error) {
+	for attempt := 0; attempt < 10; attempt++ {
+		roomID, err := generateRoomID()
+		if err != nil {
+			return nil, err
+		}
+
+		if rooms[roomID] == nil {
+			createRoom(roomID)
+			return &protos.RoomResponse{RoomId: roomID}, nil
+		}
+	}
+	return &protos.RoomResponse{Error: "Failed to generate a unique room"}, errors.New("failed to generate a unique room ID after 10 attempts")
+}
 
 // ChatRoom представляет собой комнату чата
 type ChatRoom struct {
@@ -99,19 +133,36 @@ func createRoom(roomID string) *ChatRoom {
 	return room
 }
 
-func createRoomHandler(w http.ResponseWriter, r *http.Request) {
-	roomID := "123"
-	createdRoom := createRoom(roomID)
-	fmt.Fprintf(w, "Room %s created successfully", createdRoom.ID)
-}
+// func createRoomHandler(w http.ResponseWriter, r *http.Request) {
+// 	roomID := "123"
+// 	createdRoom := createRoom(roomID)
+// 	fmt.Fprintf(w, "Room %s created successfully", createdRoom.ID)
+// }
 
 func main() {
-	// Создаем комнату с ID "123" при запуске программы
-	createRoom("123")
-	createRoom("666")
+	// Запуск gRPC-сервера
+	grpcServer := &gRPCServer{}
+	go func() {
+		listener, err := net.Listen("tcp", ":50041")
+		if err != nil {
+			log.Fatalf("Failed to listen: %v", err)
+		}
+
+		server := grpc.NewServer()
+		protos.RegisterChatServiceServer(server, grpcServer)
+
+		fmt.Println("gRPC server started on :50041")
+		err = server.Serve(listener)
+		if err != nil {
+			log.Fatalf("Failed to serve: %v", err)
+		}
+	}()
+
+	// createRoom("123")
+	// createRoom("666")
 
 	http.HandleFunc("/chat", handleWebSocket)
-	http.HandleFunc("/create-room", createRoomHandler)
+	// http.HandleFunc("/create-room", createRoomHandler)
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", nil))
 }
