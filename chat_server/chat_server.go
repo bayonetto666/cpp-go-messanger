@@ -24,7 +24,6 @@ func generateRoomID() (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	return uuidObj.String(), nil
 }
 
@@ -130,6 +129,7 @@ func createRoom(roomID string) *ChatRoom {
 	roomsLock.Lock()
 	rooms[roomID] = room
 	roomsLock.Unlock()
+	fmt.Printf("Created room %s\n", roomID)
 	return room
 }
 
@@ -140,6 +140,10 @@ func createRoom(roomID string) *ChatRoom {
 // }
 
 func main() {
+	// http.HandleFunc("/create-room", createRoomHandler)
+
+	// log.Fatal(http.ListenAndServe("0.0.0.0:50010", nil))
+
 	// Запуск gRPC-сервера
 	grpcServer := &gRPCServer{}
 	go func() {
@@ -158,13 +162,16 @@ func main() {
 		}
 	}()
 
+	http.HandleFunc("/chat", handleWebSocket)
+	fmt.Println("WebSocket server started on :50010")
+	err := http.ListenAndServe(":50010", nil)
+	if err != nil {
+		fmt.Println("Error starting server:", err)
+	}
+
 	// createRoom("123")
 	// createRoom("666")
 
-	http.HandleFunc("/chat", handleWebSocket)
-	// http.HandleFunc("/create-room", createRoomHandler)
-
-	log.Fatal(http.ListenAndServe("0.0.0.0:8080", nil))
 }
 
 // import (

@@ -57,6 +57,6 @@ private:
     void sendErrorResponse(asio::ip::tcp::socket& clientSocket, const http::status& errorStatus, const std::string& errorMessage, const unsigned short& version);
     void handleClient(asio::ip::tcp::socket& clientSocket, const asio::ip::tcp::endpoint& clientEndpoint);
 
-    void handleWebSocketConnection(std::shared_ptr<ws::stream<tcp::socket>> clientWs,const std::string& room_id);
-    void handleWebSocketConnection(ws::stream<tcp::socket>& clientWs,const std::string& room_id);
+    // void handleWebSocketConnection(std::shared_ptr<ws::stream<tcp::socket>> clientWs,const std::string& room_id);
+    void handleWebSocketConnection(ws::stream<tcp::socket>& clientWs, const std::string username, const std::string room_id);
 };

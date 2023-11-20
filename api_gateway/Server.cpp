@@ -72,22 +72,33 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
     }
     if (ws::is_upgrade(request)) {
         if (request.target() == "/chat/new"){
-            auto room_id = std::make_shared<std::string>(_chat.createRoom());
+            auto room_id = _chat.createRoom();
+            std::cout << "Created room " << room_id << std::endl;
+            std::string error;            
+            auto username = _auth.getSubject(token, error);
+            if(!error.empty()){
+              sendErrorResponse(clientSocket, http::status::internal_server_error, "", request.version());
+            }
             auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
             clientWebSocketPtr->accept(request);
             
-            std::thread([this, clientWebSocketPtr, room_id]() {
-                handleWebSocketConnection(*clientWebSocketPtr, *room_id);
+            std::thread([this, clientWebSocketPtr, &username, &room_id]() {
+                handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
             }).join();
             _context.run();        
         }
         else if (request.target() == "/chat/connect"){
-            auto room_id = std::make_shared<std::string>(request.at("room_id"));
+            auto room_id = request.at("room_id");
+            std::string error;
+            auto username = _auth.getSubject(token, error);
+            if(!error.empty()){
+              sendErrorResponse(clientSocket, http::status::internal_server_error, "", request.version());
+            }
             auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
             clientWebSocketPtr->accept(request);
 
-            std::thread([this, clientWebSocketPtr, room_id]() {
-                handleWebSocketConnection(*clientWebSocketPtr, *room_id);
+            std::thread([this, clientWebSocketPtr, &username, &room_id]() {
+                handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
             }).join();
             _context.run();        
         }
@@ -354,7 +365,24 @@ void Server::handleGetMessagesRequest(const http::request<http::string_body>& re
 //    }
 }
 
-void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs,const std::string& room_id) {
+// void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs,const std::string& room_id) {
+//   //TODO: handle lifetime
+//     try {
+//         tcp::socket serverSocket(_context);
+//         serverSocket.connect({ip::make_address("0.0.0.0"), 50010});
+//         auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
+//         serverWs->handshake("0.0.0.0:50010", "/chat?room_id=" + room_id);
+//         auto proxy = std::make_shared<websocket_proxy>(_context, clientWs, *serverWs);
+//         proxy->run();
+//     } catch (beast::system_error const& se) {
+//         if (se.code() != beast::websocket::error::closed)
+//             std::cerr << "Error: " << se.code().message() << std::endl;
+//     } catch (std::exception const& e) {
+//         std::cerr << "Error: " << e.what() << std::endl;
+//     }
+// }
+
+void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs, const std::string username, const std::string room_id){
   //TODO: handle lifetime
     try {
         tcp::socket serverSocket(_context);
