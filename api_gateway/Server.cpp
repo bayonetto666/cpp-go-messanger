@@ -384,13 +384,14 @@ void Server::handleGetMessagesRequest(const http::request<http::string_body>& re
 
 void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs, const std::string username, const std::string room_id){
   //TODO: handle lifetime
+  //TODO: fix not working connections after closed connection
     try {
         tcp::socket serverSocket(_context);
         serverSocket.connect({ip::make_address("0.0.0.0"), 50010});
         auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
         serverWs->handshake("0.0.0.0:50010", "/chat?room_id=" + room_id);
 
-        auto proxy = std::make_shared<websocket_proxy>(_context, clientWs, *serverWs);
+        auto proxy = std::make_shared<websocket_proxy>(_context, clientWs, *serverWs, username);
         
         proxy->run();
         

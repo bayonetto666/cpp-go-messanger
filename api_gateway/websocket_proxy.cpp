@@ -1,7 +1,7 @@
 #include "websocket_proxy.hpp"
 
-websocket_proxy::websocket_proxy(asio::io_context& context, ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs) :
-_context(context), _clientWs(std::move(clientWs)), _serverWs(std::move(serverWs))
+websocket_proxy::websocket_proxy(asio::io_context& context, ws::stream<tcp::socket>& clientWs, ws::stream<tcp::socket>& serverWs, std::string username) :
+_context(context), _clientWs(std::move(clientWs)), _serverWs(std::move(serverWs)), _username(username)
 {
   std::cout << "ctor\n";
 }
@@ -10,11 +10,11 @@ _context(context), _clientWs(std::move(clientWs)), _serverWs(std::move(serverWs)
 // {
 //   std::cout << "ctor\n";
 // }
-websocket_proxy::~websocket_proxy(){
+websocket_proxy::~websocket_proxy() {
   std::cout << "dtor\n";
 }
 
-void websocket_proxy::run(){
+void websocket_proxy::run() {
   _readFromClient();
   _readFromServer();
   std::cout << "running\n";
@@ -36,7 +36,7 @@ void websocket_proxy::close() {
   }
 }
 
-void websocket_proxy::_readFromServer(){
+void websocket_proxy::_readFromServer() {
   _serverBuffer.consume(_serverBuffer.size());
   _serverWs.async_read(_serverBuffer, 
     [self = shared_from_this()](const boost::system::error_code& ec, std::size_t bytes_transferred) {
@@ -50,7 +50,7 @@ void websocket_proxy::_readFromServer(){
   );
 }
 
-void websocket_proxy::_readFromClient(){
+void websocket_proxy::_readFromClient() {
   _clientBuffer.consume(_clientBuffer.size());
   _clientWs.async_read(_clientBuffer,
     [self = shared_from_this()](const boost::system::error_code& ec, std::size_t bytes_transferred) {
@@ -64,9 +64,13 @@ void websocket_proxy::_readFromClient(){
   );
 }
 
-void websocket_proxy::_writeToServer(){
+void websocket_proxy::_writeToServer() {
   auto buffer = std::make_shared<beast::flat_buffer>(_clientBuffer);
-  _serverWs.async_write(buffer->data(),
+  nlohmann::json jsonMessage = nlohmann::json::parse(beast::buffers_to_string(buffer->data()));
+  // std::string jsonString = jsonMessage.dump();  
+  jsonMessage["username"] = _username;
+  // jsonMessage["text"] = ;
+  _serverWs.async_write(asio::buffer(jsonMessage.dump()),
     [self = shared_from_this(), buffer](const boost::system::error_code& ec, std::size_t bytes_transferred) {
       if (!ec) {
         self->_readFromClient();
@@ -78,7 +82,7 @@ void websocket_proxy::_writeToServer(){
   );
 }
 
-void websocket_proxy::_writeToClient(){
+void websocket_proxy::_writeToClient() {
   auto buffer = std::make_shared<beast::flat_buffer>(_serverBuffer);
   _clientWs.async_write(buffer->data(),
     [self = shared_from_this(), buffer](const boost::system::error_code& ec, std::size_t bytes_transferred) {
