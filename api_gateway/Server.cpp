@@ -9,25 +9,33 @@ Server::Server() : _context(), _serverSocket(_context),
 //     _isRunning = false;
 //     _serverSocket.close(); // Закройте серверный сокет, чтобы прервать ожидание accept
 // }
+void Server::run() {
+    _context.run();
+}
 
 void Server::listen(){
     // _context.run();
     while (_isRunning) {
         asio::ip::tcp::socket clientSocket(_context); // Создаем сокет для клиента
-        asio::ip::tcp::endpoint clientEndpoint;
+        // asio::ip::tcp::endpoint clientEndpoint;
         
         // Принимаем входящее соединение
-        _acceptor.accept(clientSocket, clientEndpoint);
+        _acceptor.accept(clientSocket);
         
         auto clientSocketPtr = std::make_shared<asio::ip::tcp::socket>(std::move(clientSocket));
 
-        std::thread([this, clientSocketPtr, &clientEndpoint]() {
-            handleClient(*clientSocketPtr, clientEndpoint);
+        std::thread([this, clientSocketPtr]() {
+            handleClient(*clientSocketPtr);
         }).detach();
+        
+        // std::thread([this, clientSocketPtr, &clientEndpoint]() {
+        //     handleClient(*clientSocketPtr, clientEndpoint);
+        // }).detach();
     }
+
 }
 
-void Server::handleClient(asio::ip::tcp::socket& clientSocket, const asio::ip::tcp::endpoint& clientEndpoint){
+void Server::handleClient(asio::ip::tcp::socket& clientSocket) {
     // Теперь можно читать данные из clientSocket
     beast::flat_buffer buffer;
     http::request<http::string_body> request;
@@ -37,11 +45,10 @@ void Server::handleClient(asio::ip::tcp::socket& clientSocket, const asio::ip::t
     beast::http::read(clientSocket, buffer, parser);
     request = parser.get();
     
-    handleRequest(request, clientSocket, clientEndpoint);
+    handleRequest(request, clientSocket);
 }
 
-void Server::handleRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket,
-    const asio::ip::tcp::endpoint& clientEndpoint) {
+void Server::handleRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket) {
   if(request.method() == http::verb::post && request.target() == "/auth/register") {
     handleRegisterRequest(request, clientSocket); //done
     return;
@@ -85,7 +92,8 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
             std::thread([this, clientWebSocketPtr, &username, &room_id]() {
                 handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
             }).join();
-            _context.run();        
+
+            // _context.run();
         }
         else if (request.target() == "/chat/connect"){
             auto room_id = request.at("room_id");
@@ -100,19 +108,20 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
             std::thread([this, clientWebSocketPtr, &username, &room_id]() {
                 handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
             }).join();
-            _context.run();        
+            // _context.run();
+
         }
         
     }
     else if (request.method() == http::verb::post && request.target() == "/messages") {
-        handleSendMessageRequest(request, clientSocket, clientEndpoint); //done
+        handleSendMessageRequest(request, clientSocket); //done
     }
     else if (request.method() == http::verb::get && request.target() == "/messages") {
         handleGetMessagesRequest(request, clientSocket);
     }
 }
 
-void Server::handleSendMessageRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket, const asio::ip::tcp::endpoint& clientEndpoint) {
+void Server::handleSendMessageRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket)  {
     std::string error;
     nlohmann::json json_body;
 

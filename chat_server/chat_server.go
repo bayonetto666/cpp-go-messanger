@@ -98,6 +98,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	for {
 		var msg ClientMessage
 		err := conn.ReadJSON(&msg)
+		fmt.Println(msg.Username, ": ", msg.Text)
 		if err != nil {
 			log.Printf("Error reading message: %v", err)
 			break
