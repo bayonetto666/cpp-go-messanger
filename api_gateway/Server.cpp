@@ -77,18 +77,8 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
       handleNewChatRequest(request, clientSocket);
     }
     else if (request.target() == "/chat/connect"){
-      auto room_id = request.at("room_id");
-      std::string error;
-      auto username = _auth.getSubject(token, error);
-      if(!error.empty()){
-        sendErrorResponse(clientSocket, http::status::internal_server_error, "", request.version());
-      }
-      auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
-      clientWebSocketPtr->accept(request);
-      
-      handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
-    }
-        
+      handleConnectToChatRequest(request, clientSocket);
+    }    
   }
   else if (request.method() == http::verb::post && request.target() == "/messages") {
     handleSendMessageRequest(request, clientSocket); //done
