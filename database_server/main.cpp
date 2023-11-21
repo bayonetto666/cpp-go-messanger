@@ -87,37 +87,30 @@ public:
     return grpc::Status::OK;
 }
 
-    grpc::Status GetMessages(::grpc::ServerContext* context, const ::GetMessagesRequest* request, ::grpc::ServerWriter< ::Message>* writer) override {
-        /*
-            *Не работает(проблема с json)
-            *После вызова dbh.getMessages сообщения помечаються как "прочитанные",
-            при том что на клиент они могут так и не попасть
-        */
-        
-        std::string error;
-        nlohmann::json messages = dbh.getMessages(request->user(), error);
+grpc::Status GetMessages(::grpc::ServerContext* context, const ::GetMessagesRequest* request, ::grpc::ServerWriter< ::Message>* writer) override {
+    std::string error;
+    nlohmann::json messages = dbh.getMessages(request->user(), error);
 
-        if (!error.empty()) {
-            return grpc::Status(grpc::StatusCode::UNKNOWN, error);
-        }
-
-        // Iterate over the messages and send them to the client.
-        for (const auto& message : messages) {
-            ::Message response_message;
-            // Populate response_message fields based on the message JSON.
-            response_message.set_sender(message["sender"].get<std::string>());
-            response_message.set_recipient(message["recipient"].get<std::string>());
-            response_message.set_text(message["text"].get<std::string>());
-
-
-            if (!writer->Write(response_message)) {
-                // If writing fails, return an error.
-                return grpc::Status(grpc::StatusCode::UNKNOWN, "Failed to write messages to the client");
-            }
-        }
-
-        return grpc::Status::OK;
+    if (!error.empty()) {
+        return grpc::Status(grpc::StatusCode::UNKNOWN, error);
     }
+    // Iterate over the messages and send them to the client.
+    for (const auto& message : messages) {
+        ::Message response_message;
+        // Populate response_message fields based on the message JSON.
+        response_message.set_sender(message["sender"].get<std::string>());
+        response_message.set_text(message["text"].get<std::string>());
+        // response_message.set_recipient(message["recipient"].get<std::string>());
+
+        if (!writer->Write(response_message)) {
+            // If writing fails, return an error.
+            return grpc::Status(grpc::StatusCode::UNKNOWN, "Failed to write messages to the client");
+        }
+    }
+
+    return grpc::Status::OK;
+}
+
 
    grpc::Status GetPassword(::grpc::ServerContext* context, const ::GetPasswordRequest* request, ::GetPasswordResponse* response) 
    override {

@@ -240,40 +240,24 @@ void Server::handleLoginRequest(const http::request<http::string_body>& request,
 }
 
 void Server::handleGetMessagesRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket) {
-//    try {
-//        std::string ex_what;
+  http::response<http::string_body> response;
+  response.result(http::status::ok);
+  response.version(request.version());
+  response.set(http::field::server, "Server 0.1");
+  response.set(http::field::content_type, "application/json");
 
-//        
-//        std::string token = request.at(http::field::authorization);
-//        
-//        auto username = AuthJWT::getSubject(token, _secretKey);
-//        
-//        auto messages = _dbHandler->getMessages(username);
-//        
-//        http::response<http::string_body> response;
-//        response.result(http::status::ok);
-//        response.version(request.version());
-//        response.set(http::field::server, "Server 0.1");
-//        response.set(http::field::content_type, "application/json");
-//        
-//        std::string messages_json = messages.dump();
-//        response.set(http::field::content_length, std::to_string(messages_json.size()));
-//        response.body() = std::move(messages_json);
-//
-//        http::write(clientSocket, response);
-//    } catch (const std::exception& ex) {
-//        std::cerr << ex.what() << std::endl;
-//        sendErrorResponse(clientSocket, http::status::bad_request, ex.what(), 11);
-//    }
-  nlohmann::json json_body;
+  std::string token = request.at(http::field::authorization);
   std::string error;
-  if (!parseJson(request.body(), json_body, error)) {
-    std::cerr << "Error parsing json, message has not been sent" << std::endl;
-    sendErrorResponse(clientSocket, http::status::bad_request, error, request.version());
-    return;
+  auto username = _auth.getSubject(token, error);
+  auto messages = _db.GetMessages(username);
+  for(const auto& message : messages){
+    nlohmann::json msg;
+    msg["sender"] = message.sender();
+    msg["text"] = message.text();
+    response.body().append(std::move(msg.dump()));
   }
 
-  
+  http::write(clientSocket, response);
 }
 
 void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs, const std::string username, const std::string room_id) {

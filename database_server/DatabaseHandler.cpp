@@ -106,7 +106,7 @@ nlohmann::json DatabaseHandler::getMessages(const std::string &username, std::st
         for (const auto& message : found_messages) {
             nlohmann::json message_json;
             message_json["sender"] = message["sender"].get_string().value.to_string();
-            message_json["message"] = message["message"].get_string().value.to_string();
+            message_json["text"] = message["text"].get_string().value.to_string();
             message_json["date"] = message["date"].get_string().value.to_string();
 
             markMessageAsRead(message["_id"].get_oid().value.to_string());
@@ -118,7 +118,7 @@ nlohmann::json DatabaseHandler::getMessages(const std::string &username, std::st
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << "getMessages error: "<<e.what() << '\n';
         error = e.what();
     }
     return messages;
