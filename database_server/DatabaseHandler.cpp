@@ -71,17 +71,26 @@ std::pair<std::string, std::string> DatabaseHandler::getPassword(const std::stri
 
 void DatabaseHandler::storeMessage(const nlohmann::json &message_json, std::string &error)
 {
-    try
-    {
-        bsoncxx::document::value message_doc = bsoncxx::from_json(message_json.dump());
-        
-        _messagesCollection.insert_one(message_doc.view());
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-        error = e.what();
-    }
+  try
+  {
+    nlohmann::json updated_message_json = message_json;
+    //TODO: fix timezone
+    auto current_time = std::chrono::system_clock::now();
+    auto timestamp = std::chrono::system_clock::to_time_t(current_time);
+    std::stringstream formatted_timestamp;
+    formatted_timestamp << std::put_time(std::gmtime(&timestamp), "%Y-%m-%d-%H:%M");
+    updated_message_json["date"] = formatted_timestamp.str();
+
+    updated_message_json["seen"] = false;
+
+    bsoncxx::document::value message_doc = bsoncxx::from_json(updated_message_json.dump());
+    _messagesCollection.insert_one(message_doc.view());
+  }
+  catch(const std::exception& e)
+  {
+    std::cerr << e.what() << '\n';
+    error = e.what();
+  }
 }
 
 nlohmann::json DatabaseHandler::getMessages(const std::string &username, std::string& error)

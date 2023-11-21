@@ -18,8 +18,7 @@ public:
 
     bool storeMessage(const std::string& recipient, const std::string& sender, const std::string& text, std::string& error);
 
-    // std::vector<Message> GetMessages(const std::string& username){
-    // }
+    std::vector<Message> GetMessages(const std::string& username);
 
 private:
     std::unique_ptr<Database::Stub> stub_;
