@@ -92,15 +92,15 @@ void Server::handleSendMessageRequest(const http::request<http::string_body>& re
   std::string error;
   nlohmann::json json_body;
 
-  if (!parseJson(request.body(), json_body, error)) {
+  parseJson(request.body(), json_body, error);
+  if (!error.empty()) {
     std::cerr << "Error parsing json, message has not been sent" << std::endl;
     sendErrorResponse(clientSocket, http::status::bad_request, error, request.version());
     return;
   }
-  std::string recipient;
-  std::string message;
-  recipient = json_body["recipient"];
-  message = json_body["message"];
+
+  std::string recipient = json_body["recipient"];
+  std::string message = json_body["message"];
   std::string token = request.at(http::field::authorization);
 
   if (!_db.UserExists(recipient))
@@ -133,18 +133,21 @@ void Server::handleSendMessageRequest(const http::request<http::string_body>& re
     response.body() = std::move(responseBody);
   }
   response.prepare_payload();
-  http::write(clientSocket, response);
+  try {
+    http::write(clientSocket, response);
+  } catch (const std::exception& e) {
+    std::cerr << "Error registering user: " << e.what() << std::endl;
+    sendErrorResponse(clientSocket, http::status::bad_request, e.what(), 2);
+    return;
+  }
 }
 
-bool Server::parseJson(const std::string& body, nlohmann::json& parsedJson, std::string& ex_what) {
-  // TODO: Refactor in the future
+void Server::parseJson(const std::string& body, nlohmann::json& parsedJson, std::string& error) noexcept {
   try {
        parsedJson = nlohmann::json::parse(body);
-       return true; // JSON был успешно разобран
     } catch (const std::exception& e) {
-      ex_what = e.what();
-      std::cerr << "Json parsing error : " << e.what() << std::endl;
-      return false; // Возникла ошибка при парсинге JSON
+      error = e.what();
+      std::cerr << "Error parsing json: " << e.what() << std::endl;
     }
 }
 
@@ -161,24 +164,25 @@ void Server::sendErrorResponse(asio::ip::tcp::socket& clientSocket, const http::
 void Server::handleRegisterRequest(const http::request<http::string_body> &request, asio::ip::tcp::socket &clientSocket) {
   nlohmann::json json_body;
   std::string error;
-  if(!parseJson(request.body(), json_body, error)){
+  parseJson(request.body(), json_body, error);
+  if(!error.empty()){
     std::cerr << "Error parsing json, message has not been sent" << std::endl;
     sendErrorResponse(clientSocket, http::status::bad_request, error, request.version());
     return;
   }
-  try {
-    _auth.registerUser(json_body["username"], json_body["password"], error);        
-    if (!error.empty()) {
-      sendErrorResponse(clientSocket, http::status::bad_request, error, request.version());
-    }
-    
-    http::response<http::string_body> response;
-    response.result(http::status::ok);
-    response.version(request.version());
-    response.set(http::field::server, "Server 0.2");
-    response.set(http::field::content_type, "application/json");
-    http::write(clientSocket, response);
+  _auth.registerUser(json_body["username"], json_body["password"], error);        
+  if (!error.empty()) {
+    sendErrorResponse(clientSocket, http::status::bad_request, error, request.version());
+  }
+  
+  http::response<http::string_body> response;
+  response.result(http::status::ok);
+  response.version(request.version());
+  response.set(http::field::server, "Server 0.2");
+  response.set(http::field::content_type, "application/json");
 
+  try {
+    http::write(clientSocket, response);
    } catch (const std::exception& e) {
     std::cerr << "Error registering user: " << e.what() << std::endl;
     sendErrorResponse(clientSocket, http::status::bad_request, e.what(), 2);
@@ -189,7 +193,8 @@ void Server::handleRegisterRequest(const http::request<http::string_body> &reque
 void Server::handleLoginRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket) {
   nlohmann::json json_body;
   std::string error;
-  if(!parseJson(request.body(), json_body, error)){
+  parseJson(request.body(), json_body, error);
+  if(!error.empty()){
     std::cerr << "Error parsing json, login failed" << std::endl;
     sendErrorResponse(clientSocket, http::status::bad_request, error, request.version());
     return;
@@ -207,7 +212,13 @@ void Server::handleLoginRequest(const http::request<http::string_body>& request,
   response.set(http::field::server, "Server 0.2");
   response.set(http::field::content_type, "application/json");
   response.body() = token;
-  http::write(clientSocket, response);
+  try {
+    http::write(clientSocket, response);
+  } catch (const std::exception& e) {
+    std::cerr << "Error registering user: " << e.what() << std::endl;
+    sendErrorResponse(clientSocket, http::status::bad_request, e.what(), request.version());
+    return;
+  }
 }
 
 void Server::handleGetMessagesRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket) {
@@ -228,7 +239,13 @@ void Server::handleGetMessagesRequest(const http::request<http::string_body>& re
     response.body().append(std::move(msg.dump()));
   }
 
-  http::write(clientSocket, response);
+  try {
+    http::write(clientSocket, response);
+  } catch (const std::exception& e) {
+    std::cerr << "Error registering user: " << e.what() << std::endl;
+    sendErrorResponse(clientSocket, http::status::bad_request, e.what(), request.version());
+    return;
+  }
 }
 
 void Server::handleNewChatRequest(const http::request<http::string_body> &request, asio::ip::tcp::socket &clientSocket) {

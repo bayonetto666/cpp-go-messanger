@@ -60,7 +60,7 @@ private:
   void handleWebSocketConnection(ws::stream<tcp::socket>& clientWs, const std::string username, const std::string room_id);
   void inviteUsers(const std::string& inviter, const std::string& room_id, const std::vector<std::string> invitedUsers);
 
-  bool parseJson(const std::string& body, nlohmann::json& parsedJson, std::string& ex_what);
+  void parseJson(const std::string& body, nlohmann::json& parsedJson, std::string& error) noexcept;
   void sendErrorResponse(asio::ip::tcp::socket& clientSocket, const http::status& errorStatus, const std::string& errorMessage, const unsigned short& version);
 
 };
