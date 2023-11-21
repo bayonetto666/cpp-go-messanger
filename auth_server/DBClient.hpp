@@ -25,7 +25,7 @@ public:
         }
     }
 
-    std::pair<std::string,std::string> GetPassword(const std::string& username){
+    std::pair<std::string,std::string> GetPassword(const std::string& username, std::string& error){
         grpc::ClientContext context;
         GetPasswordRequest request;
         request.set_username(username);
@@ -36,6 +36,8 @@ public:
             return std::make_pair(response.hashed_password(), response.salt());
         } else {
             std::cerr << "Error: " << status.error_message() << std::endl;
+            error = status.error_message();
+            return std::make_pair("", "");
         }
     }
 

@@ -8,6 +8,8 @@
 #include "AuthServer.grpc.pb.h"
 #include "AuthServer.pb.h"
 
+//TODO: fix drop after Error: Failed to get password data: User ___ was not found
+
 /*class AuthServerClient {
 public:
     AuthServerClient(const std::string& server_address) : channel_(grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials())) {

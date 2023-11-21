@@ -24,7 +24,11 @@ std::string Auth::authUser(const std::string &username, const std::string &passw
 {
     try
     {
-        auto password_data = _db.GetPassword(username);
+        auto password_data = _db.GetPassword(username, error);
+
+        if(!error.empty()){
+          return "";
+        }
 
         bool verified = Hasher::verifyPassword(password, password_data.first, password_data.second);
 

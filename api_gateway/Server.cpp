@@ -123,14 +123,17 @@ void Server::handleSendMessageRequest(const http::request<http::string_body>& re
   response.set(http::field::content_type, "application/json");
   
   if (error.empty()) {
-    std::string responseBody = "Message was successfully sent";
-    response.set(http::field::content_length, std::to_string(responseBody.size()));
-    response.body() = std::move(responseBody);
+    nlohmann::json resporesponseBody;
+    resporesponseBody["success"] = "Message was successfully sent";
+    // response.set(http::field::content_length, std::to_string(responseBody.size()));
+    response.body() = resporesponseBody.dump();
   } else {
-    std::string responseBody = "Error sending message: " + error;
+    nlohmann::json resporesponseBody;
+    resporesponseBody["success"] = error;
+    // std::string responseBody = "Error sending message: " + error;
     response.result(http::status::bad_request);
-    response.set(http::field::content_length, std::to_string(responseBody.size()));
-    response.body() = std::move(responseBody);
+    // response.set(http::field::content_length, std::to_string(responseBody.size()));
+    response.body() = resporesponseBody.dump();
   }
   response.prepare_payload();
   try {
@@ -155,8 +158,9 @@ void Server::sendErrorResponse(asio::ip::tcp::socket& clientSocket, const http::
   http::response<beast::http::string_body> response;
   response.result(errorStatus);
   response.version(version);
-  std::string body = "Error occured:\n" + errorMessage;
-  response.body().append(body);
+  nlohmann::json body;
+  body["error"] = errorMessage;
+  response.body() = body.dump();
 
   http::write(clientSocket, response);
 }
@@ -211,7 +215,9 @@ void Server::handleLoginRequest(const http::request<http::string_body>& request,
   response.version(request.version());
   response.set(http::field::server, "Server 0.2");
   response.set(http::field::content_type, "application/json");
-  response.body() = token;
+  nlohmann::json body;
+  body["token"] = token;
+  response.body() = body.dump();
   try {
     http::write(clientSocket, response);
   } catch (const std::exception& e) {
