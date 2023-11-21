@@ -9,11 +9,11 @@
 class ChatClient
 {
 public:
-    ChatClient(const std::string& server_address);
+  ChatClient(const std::string& server_address);
 
-    std::string createRoom();
+  [[nodiscard]] std::string createRoom();
 
 private:
-    std::unique_ptr<chat::ChatService::Stub> stub_;
-    std::shared_ptr<grpc::Channel> channel_;
+  std::unique_ptr<chat::ChatService::Stub> stub_;
+  std::shared_ptr<grpc::Channel> channel_;
 };

@@ -9,6 +9,7 @@ Server::Server() : _context(), _serverSocket(_context),
 //     _isRunning = false;
 //     _serverSocket.close(); // Закройте серверный сокет, чтобы прервать ожидание accept
 // }
+
 void Server::run() {
   _context.run();
 }
@@ -19,7 +20,6 @@ void Server::listen() {
   _acceptor.async_accept(*clientSocket, [this, clientSocket](const boost::system::error_code ec){
     if (!ec) {
       handleClient(*clientSocket);
-      // После обработки одного клиента снова начинаем ждать новых подключений
       listen();
     } else {
       std::cout << "accept error: " << ec.message() << std::endl;
@@ -27,18 +27,16 @@ void Server::listen() {
   });
 }
 
-
 void Server::handleClient(asio::ip::tcp::socket& clientSocket) {
-    // Теперь можно читать данные из clientSocket
-    beast::flat_buffer buffer;
-    http::request<http::string_body> request;
-    http::request_parser<http::string_body> parser;
-    parser.eager(true);
-    
-    beast::http::read(clientSocket, buffer, parser);
-    request = parser.get();
-    
-    handleRequest(request, clientSocket);
+  beast::flat_buffer buffer;
+  http::request<http::string_body> request;
+  http::request_parser<http::string_body> parser;
+  parser.eager(true);
+  
+  beast::http::read(clientSocket, buffer, parser);
+  request = parser.get();
+  
+  handleRequest(request, clientSocket);
 }
 
 void Server::handleRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket) {
@@ -50,64 +48,76 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
     handleLoginRequest(request, clientSocket); //done
     return;
   }
-    //надо будет как-то красиво сделать потом
-    std::string error;
-    std::string token;
-    try {
-      //TODO: get rid of try/catch here 
-        token = request.at(http::field::authorization);
-    } catch (const std::exception& e) {
+  //надо будет как-то красиво сделать потом
+  std::string error;
+  std::string token;
+  try {
+    //TODO: get rid of try/catch here 
+    token = request.at(http::field::authorization);
+  } catch (const std::exception& e) {
+    std::cout << "Error: " << e.what() << std::endl;
+    sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain authorization token", request.version());
+    return;
+  }
+  bool verified = _auth.verifyJWT(token, error);
+  if(!error.empty()) {
+    sendErrorResponse(clientSocket, http::status::unknown, error, request.version());
+    return;
+  }
+  if (!verified) {
+    sendErrorResponse(clientSocket, http::status::unauthorized, "", request.version());
+    return;
+  }
+  if (ws::is_upgrade(request)) {
+    if (request.target() == "/chat/new") {
+      auto username = _auth.getSubject(token, error);
+
+      auto room_id = _chat.createRoom();
+      std::cout << "Created room " << room_id << std::endl;
+
+      try {
+        //TODO: get rid of try/catch here 
+        auto invitedUsersHeader = request.at("invited_users");
+        std::vector<std::string> invitedUsers;
+        boost::split(invitedUsers, invitedUsersHeader, boost::is_any_of(","));
+        inviteUsers(username, room_id, invitedUsers);
+      } catch (const std::exception& e) {
         std::cout << "Error: " << e.what() << std::endl;
         sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain authorization token", request.version());
         return;
-    }
-    bool verified = _auth.verifyJWT(token, error);
-    if(!error.empty()){
-        sendErrorResponse(clientSocket, http::status::unknown, error, request.version());
-        return;
-    }
-    if (!verified)
-    {
-        sendErrorResponse(clientSocket, http::status::unauthorized, "", request.version());
-        return;
-    }
-    if (ws::is_upgrade(request)) {
-        if (request.target() == "/chat/new"){
-            auto room_id = _chat.createRoom();
-            std::cout << "Created room " << room_id << std::endl;
-            std::string error;            
-            auto username = _auth.getSubject(token, error);
-            if(!error.empty()){
-              sendErrorResponse(clientSocket, http::status::internal_server_error, "", request.version());
-            }
-            auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
-            clientWebSocketPtr->accept(request);
-            
-            handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
-        }
-        else if (request.target() == "/chat/connect"){
-            auto room_id = request.at("room_id");
-            std::string error;
-            auto username = _auth.getSubject(token, error);
-            if(!error.empty()){
-              sendErrorResponse(clientSocket, http::status::internal_server_error, "", request.version());
-            }
-            auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
-            clientWebSocketPtr->accept(request);
+      }
+      std::string error;
+      if(!error.empty()){
+        sendErrorResponse(clientSocket, http::status::internal_server_error, "", request.version());
+      }
+      auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
+      clientWebSocketPtr->accept(request);
 
-            handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
-        }
+      handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
+    }
+    else if (request.target() == "/chat/connect"){
+      auto room_id = request.at("room_id");
+      std::string error;
+      auto username = _auth.getSubject(token, error);
+      if(!error.empty()){
+        sendErrorResponse(clientSocket, http::status::internal_server_error, "", request.version());
+      }
+      auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
+      clientWebSocketPtr->accept(request);
+      
+      handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
+    }
         
-    }
-    else if (request.method() == http::verb::post && request.target() == "/messages") {
-        handleSendMessageRequest(request, clientSocket); //done
-    }
-    else if (request.method() == http::verb::get && request.target() == "/messages") {
-        handleGetMessagesRequest(request, clientSocket);
-    }
+  }
+  else if (request.method() == http::verb::post && request.target() == "/messages") {
+    handleSendMessageRequest(request, clientSocket); //done
+  }
+  else if (request.method() == http::verb::get && request.target() == "/messages") {
+    handleGetMessagesRequest(request, clientSocket);
+  }
 }
 
-void Server::handleSendMessageRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket)  {
+void Server::handleSendMessageRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket) {
     std::string error;
     nlohmann::json json_body;
 
@@ -193,7 +203,8 @@ void Server::handleSendMessageRequest(const http::request<http::string_body>& re
 
 }
 
-bool Server::parseJson(const std::string& body, nlohmann::json& parsedJson, std::string& ex_what){
+bool Server::parseJson(const std::string& body, nlohmann::json& parsedJson, std::string& ex_what) {
+  // TODO: Refactor in the future
     try {
             parsedJson = nlohmann::json::parse(body);
             return true; // JSON был успешно разобран
@@ -204,28 +215,7 @@ bool Server::parseJson(const std::string& body, nlohmann::json& parsedJson, std:
         }
 }
 
-//void Server::sendMessage(asio::ip::tcp::socket& recipient_socket, const std::string& message, const std::string& sender){
-//
-//    // Формирование POST-запроса
-//    http::request<http::string_body> post_request;
-//    post_request.method(http::verb::post);
-//    post_request.target("/messages");
-//    post_request.version(11);
-//    post_request.set(beast::http::field::host, "client.com");
-//    post_request.set(beast::http::field::content_type, "application/json");
-//
-//    nlohmann::json post_data = {
-//        {"sender", sender},
-//        {"message", message}
-//    };
-//    post_request.body() = post_data.dump();
-//    post_request.prepare_payload();
-//
-//    // Отправка POST-запроса получателю
-//    http::write(recipient_socket, post_request);
-//}
-
-void Server::sendErrorResponse(asio::ip::tcp::socket& clientSocket, const http::status& errorStatus, const std::string& errorMessage, const unsigned short& version){
+void Server::sendErrorResponse(asio::ip::tcp::socket& clientSocket, const http::status& errorStatus, const std::string& errorMessage, const unsigned short& version) {
     http::response<beast::http::string_body> response;
     response.result(errorStatus);
     response.version(version);
@@ -235,8 +225,7 @@ void Server::sendErrorResponse(asio::ip::tcp::socket& clientSocket, const http::
     http::write(clientSocket, response);
 }
 
-void Server::handleRegisterRequest(const http::request<http::string_body> &request, asio::ip::tcp::socket &clientSocket)
-{
+void Server::handleRegisterRequest(const http::request<http::string_body> &request, asio::ip::tcp::socket &clientSocket) {
     nlohmann::json json_body;
     std::string error;
     if(!parseJson(request.body(), json_body, error)){
@@ -267,7 +256,7 @@ void Server::handleRegisterRequest(const http::request<http::string_body> &reque
    }
 }
 
-void Server::handleLoginRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket){
+void Server::handleLoginRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket) {
 //    nlohmann::json json_body;
 //    std::string ex_what;
 //    if(!parseJson(request.body(), json_body, ex_what)){
@@ -326,7 +315,7 @@ void Server::handleLoginRequest(const http::request<http::string_body>& request,
 
 }
 
-void Server::handleGetMessagesRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket){
+void Server::handleGetMessagesRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket) {
 //    try {
 //        std::string ex_what;
 //    //    nlohmann::json json_body;
@@ -360,39 +349,34 @@ void Server::handleGetMessagesRequest(const http::request<http::string_body>& re
 //    }
 }
 
-// void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs,const std::string& room_id) {
-//   //TODO: handle lifetime
-//     try {
-//         tcp::socket serverSocket(_context);
-//         serverSocket.connect({ip::make_address("0.0.0.0"), 50010});
-//         auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
-//         serverWs->handshake("0.0.0.0:50010", "/chat?room_id=" + room_id);
-//         auto proxy = std::make_shared<websocket_proxy>(_context, clientWs, *serverWs);
-//         proxy->run();
-//     } catch (beast::system_error const& se) {
-//         if (se.code() != beast::websocket::error::closed)
-//             std::cerr << "Error: " << se.code().message() << std::endl;
-//     } catch (std::exception const& e) {
-//         std::cerr << "Error: " << e.what() << std::endl;
-//     }
-// }
+void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs, const std::string username, const std::string room_id) {
+  try {
+    tcp::socket serverSocket(_context);
+    
+    serverSocket.connect({ip::make_address("0.0.0.0"), 50010});
+    auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
+    serverWs->handshake("0.0.0.0:50010", "/chat?room_id=" + room_id);
+    
+    auto proxy = std::make_shared<websocket_proxy>(_context, clientWs, *serverWs, username);      
+    
+    proxy->run();
+    
+  } catch (beast::system_error const& se) {
+    if (se.code() != beast::websocket::error::closed)
+      std::cerr << "Error: " << se.code().message() << std::endl;
+  } catch (std::exception const& e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+  }
+}
 
-void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs, const std::string username, const std::string room_id){
-  //TODO: handle lifetime
-    try {
-        tcp::socket serverSocket(_context);
-        serverSocket.connect({ip::make_address("0.0.0.0"), 50010});
-        auto serverWs = std::make_shared<ws::stream<tcp::socket>>(std::move(serverSocket));
-        serverWs->handshake("0.0.0.0:50010", "/chat?room_id=" + room_id);
-
-        auto proxy = std::make_shared<websocket_proxy>(_context, clientWs, *serverWs, username);
-        
-        proxy->run();
-        
-    } catch (beast::system_error const& se) {
-        if (se.code() != beast::websocket::error::closed)
-            std::cerr << "Error: " << se.code().message() << std::endl;
-    } catch (std::exception const& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+void Server::inviteUsers(const std::string& inviter, const std::string& room_id ,const std::vector<std::string> invitedUsers) {
+  //TODO: add date of invitation
+  std::string message =  "user " + inviter + " invited you to chat " + room_id;
+  std::string error;
+  for(const auto user : invitedUsers){
+    _db.storeMessage(user, inviter, message, error);
+    if(!error.empty()){
+      std::cout << "Error inviting user " << user << " to room " << room_id + ": " << error << std::endl;
     }
+  }  
 }
