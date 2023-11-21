@@ -4,7 +4,7 @@ AuthClient::AuthClient(const std::string& server_address) : channel_(grpc::Creat
         stub_ = Authentication::NewStub(channel_); 
 }
 
-std::string AuthClient::authUser(const std::string& username, const std::string& password, std::string& error){
+std::string AuthClient::authUser(const std::string& username, const std::string& password, std::string& error) {
         authUserRequest request;
         request.set_username(username);
         request.set_password(password);
@@ -23,7 +23,7 @@ std::string AuthClient::authUser(const std::string& username, const std::string&
         return response.token();
     }
 
-bool AuthClient::registerUser(const std::string& username, const std::string& password, std::string& error){
+bool AuthClient::registerUser(const std::string& username, const std::string& password, std::string& error) {
         registerUserRequest request;
         request.set_username(username);
         request.set_password(password);
@@ -31,18 +31,14 @@ bool AuthClient::registerUser(const std::string& username, const std::string& pa
         grpc::ClientContext context;
         grpc::Status status = stub_->registerUser(&context, request, &response);
         
-        if (!status.ok())
-        {
-
+        if (!status.ok()) {
+          
         }
-        // if (!response.error().empty())
-        // {
 
-        // }
         return response.success();
     }
 
-bool AuthClient::verifyJWT(const std::string& token, std::string& error){
+bool AuthClient::verifyJWT(const std::string& token, std::string& error) {
 
         verifyJWTRequest request;
         request.set_token(token);
@@ -60,7 +56,7 @@ bool AuthClient::verifyJWT(const std::string& token, std::string& error){
         return response.verified();
     }
 
-std::string AuthClient::getSubject(const std::string& token, std::string& error){
+std::string AuthClient::getSubject(const std::string& token, std::string& error) {
         getSubjectRequest request;
         request.set_token(token);
         getSubjectResponse response;
