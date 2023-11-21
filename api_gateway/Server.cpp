@@ -1,9 +1,14 @@
 #include "Server.hpp"
 
-Server::Server() : _context(), _serverSocket(_context),
-    _serverEndpoint(asio::ip::make_address("127.0.0.1"), 8080), _acceptor(_context, _serverEndpoint), _isRunning(true),
-    _db("0.0.0.0:50051"), _auth("0.0.0.0:50052"), _chat("0.0.0.0:50041")
-{}
+Server::Server()
+  : _context(),
+    _serverSocket(_context),
+    _serverEndpoint(asio::ip::make_address("127.0.0.1"), 8080),
+    _acceptor(_context, _serverEndpoint),
+    _isRunning(true),
+    _db("0.0.0.0:50051"),
+    _auth("0.0.0.0:50052"),
+    _chat("0.0.0.0:50041") {}
 
 // void Server::stop() {
 //     _isRunning = false;
@@ -51,14 +56,13 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
   //надо будет как-то красиво сделать потом
   std::string error;
   std::string token;
-  try {
-    //TODO: get rid of try/catch here 
-    token = request.at(http::field::authorization);
-  } catch (const std::exception& e) {
-    std::cout << "Error: " << e.what() << std::endl;
+  if(request.find(http::field::authorization) == request.end()){
     sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain authorization token", request.version());
     return;
   }
+  
+  token = request.at(http::field::authorization);
+
   bool verified = _auth.verifyJWT(token, error);
   if(!error.empty()) {
     sendErrorResponse(clientSocket, http::status::unknown, error, request.version());
@@ -70,30 +74,31 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
   }
   if (ws::is_upgrade(request)) {
     if (request.target() == "/chat/new") {
-      auto username = _auth.getSubject(token, error);
+      handleNewChatRequest(request, clientSocket);
+      // auto username = _auth.getSubject(token, error);
 
-      auto room_id = _chat.createRoom();
-      std::cout << "Created room " << room_id << std::endl;
+      // auto room_id = _chat.createRoom();
+      // std::cout << "Created room " << room_id << std::endl;
+      
+      // if(request.find("invited_users") == request.end()){
+      //   sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain invited users", request.version());
+      //   return;
+      // }
+      
+      // auto invitedUsersHeader = request.at("invited_users");
+      // std::vector<std::string> invitedUsers;
+      // boost::split(invitedUsers, invitedUsersHeader, boost::is_any_of(","));
+      
+      // inviteUsers(username, room_id, invitedUsers);
+      // std::string error;
 
-      try {
-        //TODO: get rid of try/catch here 
-        auto invitedUsersHeader = request.at("invited_users");
-        std::vector<std::string> invitedUsers;
-        boost::split(invitedUsers, invitedUsersHeader, boost::is_any_of(","));
-        inviteUsers(username, room_id, invitedUsers);
-      } catch (const std::exception& e) {
-        std::cout << "Error: " << e.what() << std::endl;
-        sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain authorization token", request.version());
-        return;
-      }
-      std::string error;
-      if(!error.empty()){
-        sendErrorResponse(clientSocket, http::status::internal_server_error, "", request.version());
-      }
-      auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
-      clientWebSocketPtr->accept(request);
+      // if(!error.empty()){
+      //   sendErrorResponse(clientSocket, http::status::internal_server_error, "", request.version());
+      // }
+      // auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
+      // clientWebSocketPtr->accept(request);
 
-      handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
+      // handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
     }
     else if (request.target() == "/chat/connect"){
       auto room_id = request.at("room_id");
@@ -113,7 +118,7 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
     handleSendMessageRequest(request, clientSocket); //done
   }
   else if (request.method() == http::verb::get && request.target() == "/messages") {
-    handleGetMessagesRequest(request, clientSocket);
+    handleGetMessagesRequest(request, clientSocket); //done
   }
 }
 
@@ -258,6 +263,33 @@ void Server::handleGetMessagesRequest(const http::request<http::string_body>& re
   }
 
   http::write(clientSocket, response);
+}
+
+void Server::handleNewChatRequest(const http::request<http::string_body> &request, asio::ip::tcp::socket &clientSocket) {
+  std::string error;
+  auto username = _auth.getSubject(request.at(http::field::authorization), error);
+
+  auto room_id = _chat.createRoom();
+  std::cout << "Created room " << room_id << std::endl;
+      
+  if(request.find("invited_users") == request.end()){
+    sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain invited users", request.version());
+    return;
+  }
+
+  auto invitedUsersHeader = request.at("invited_users");
+  std::vector<std::string> invitedUsers;
+  boost::split(invitedUsers, invitedUsersHeader, boost::is_any_of(","));
+      
+  inviteUsers(username, room_id, invitedUsers);
+
+  if(!error.empty()){
+    sendErrorResponse(clientSocket, http::status::internal_server_error, "", request.version());
+  }
+  auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket)); //mb use only clientSocket
+  clientWebSocketPtr->accept(request);
+
+  handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
 }
 
 void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs, const std::string username, const std::string room_id) {

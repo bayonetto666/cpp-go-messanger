@@ -54,10 +54,13 @@ private:
   void handleRegisterRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket);
   void handleLoginRequest(const http::request<http::string_body>& request,asio::ip::tcp::socket& clientSocket);
   void handleGetMessagesRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket);
-  void sendErrorResponse(asio::ip::tcp::socket& clientSocket, const http::status& errorStatus, const std::string& errorMessage, const unsigned short& version);
+
+  void handleNewChatRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket);
+  void handleConnectToChatRequest(const http::request<http::string_body>& request);
   void handleWebSocketConnection(ws::stream<tcp::socket>& clientWs, const std::string username, const std::string room_id);
   void inviteUsers(const std::string& inviter, const std::string& room_id, const std::vector<std::string> invitedUsers);
 
   bool parseJson(const std::string& body, nlohmann::json& parsedJson, std::string& ex_what);
+  void sendErrorResponse(asio::ip::tcp::socket& clientSocket, const http::status& errorStatus, const std::string& errorMessage, const unsigned short& version);
 
 };
