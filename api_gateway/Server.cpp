@@ -75,30 +75,6 @@ void Server::handleRequest(const http::request<http::string_body>& request,asio:
   if (ws::is_upgrade(request)) {
     if (request.target() == "/chat/new") {
       handleNewChatRequest(request, clientSocket);
-      // auto username = _auth.getSubject(token, error);
-
-      // auto room_id = _chat.createRoom();
-      // std::cout << "Created room " << room_id << std::endl;
-      
-      // if(request.find("invited_users") == request.end()){
-      //   sendErrorResponse(clientSocket, http::status::bad_request, "Error: request does not contain invited users", request.version());
-      //   return;
-      // }
-      
-      // auto invitedUsersHeader = request.at("invited_users");
-      // std::vector<std::string> invitedUsers;
-      // boost::split(invitedUsers, invitedUsersHeader, boost::is_any_of(","));
-      
-      // inviteUsers(username, room_id, invitedUsers);
-      // std::string error;
-
-      // if(!error.empty()){
-      //   sendErrorResponse(clientSocket, http::status::internal_server_error, "", request.version());
-      // }
-      // auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
-      // clientWebSocketPtr->accept(request);
-
-      // handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
     }
     else if (request.target() == "/chat/connect"){
       auto room_id = request.at("room_id");
@@ -286,11 +262,25 @@ void Server::handleNewChatRequest(const http::request<http::string_body> &reques
   if(!error.empty()){
     sendErrorResponse(clientSocket, http::status::internal_server_error, "", request.version());
   }
-  auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket)); //mb use only clientSocket
+  auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
   clientWebSocketPtr->accept(request);
 
   handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
 }
+
+void Server::handleConnectToChatRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket){
+  auto room_id = request.at("room_id");
+  std::string error;
+  auto username = _auth.getSubject(request.at(http::field::authorization), error);
+  if(!error.empty()){
+    sendErrorResponse(clientSocket, http::status::internal_server_error, "", request.version());
+  }
+  auto clientWebSocketPtr = std::make_shared<ws::stream<tcp::socket>>(std::move(clientSocket));
+  clientWebSocketPtr->accept(request);
+  
+  handleWebSocketConnection(*clientWebSocketPtr, username, room_id);
+}
+
 
 void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs, const std::string username, const std::string room_id) {
   try {

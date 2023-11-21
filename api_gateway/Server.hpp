@@ -56,7 +56,7 @@ private:
   void handleGetMessagesRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket);
 
   void handleNewChatRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket);
-  void handleConnectToChatRequest(const http::request<http::string_body>& request);
+  void handleConnectToChatRequest(const http::request<http::string_body>& request, asio::ip::tcp::socket& clientSocket);
   void handleWebSocketConnection(ws::stream<tcp::socket>& clientWs, const std::string username, const std::string room_id);
   void inviteUsers(const std::string& inviter, const std::string& room_id, const std::vector<std::string> invitedUsers);
 
