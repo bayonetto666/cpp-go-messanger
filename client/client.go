@@ -202,7 +202,23 @@ func main() {
 	roomIdEntry.SetPlaceHolder("Enter room ID...")
 
 	connectToChatButton := widget.NewButton("Connect", func() {
+		room_id := roomIdEntry.Text
+		u := url.URL{Scheme: "ws", Host: "localhost:8080", Path: "/chat/connect"}
+		headers := http.Header{}
+		headers.Add("Authorization", token)
+		headers.Add("room_id", room_id)
 
+		dialer := websocket.DefaultDialer
+		var err error
+		conn, _, err = dialer.Dial(u.String(), headers)
+		if err != nil {
+			log.Fatal("Ошибка подключения:", err)
+		}
+		// defer c.Close()
+
+		go readWsMessage(conn, &messages_q)
+
+		mainWindow.SetContent(chatWindow)
 	})
 
 	chatMenuWindow := container.NewVBox(
