@@ -5,16 +5,28 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"net/url"
 	"strings"
+
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"github.com/gorilla/websocket"
 )
 
-var token string
+type WsMessage struct {
+	Text string `json:"text"`
+}
+
+type WsInclomingMessage struct {
+	Text     string `json:"text"`
+	Username string `json:"username"`
+}
 
 type AuthResponse struct {
 	Token string `json:"token"`
@@ -44,6 +56,10 @@ type Message struct {
 	Sender string `json:"sender"`
 	Text   string `json:"text"`
 }
+
+var conn *websocket.Conn
+var token string
+var messages_q []WsInclomingMessage
 
 func main() {
 	a := app.New()
@@ -111,6 +127,44 @@ func main() {
 		}
 	})
 
+	// Окно для чата
+	chatMessages := widget.NewLabel("")
+	chatEntry := widget.NewEntry()
+	chatEntry.SetPlaceHolder("Enter your message...")
+	// chatLabel := widget.NewLabel("")
+	chatSendButton := widget.NewButton("Send", func() {
+		// Логика отправки сообщения через WebSocket
+		message := chatEntry.Text
+		if message != "" {
+			sendWsMessage(conn, message)
+			chatEntry.SetText("") // Очистить поле ввода после отправки
+		}
+	})
+
+	// Создаем окно для чата
+	chatWindow := container.NewVBox(
+		chatMessages, // Виджет для отображения сообщений
+		// chatLabel,
+		chatEntry,
+		chatSendButton,
+	)
+
+	go func() {
+		for {
+			// Проверяем наличие новых сообщений
+			if len(messages_q) > 0 {
+				// Обновляем виджет с сообщениями
+				newText := chatMessages.Text + "\n" + messages_q[0].Username + ": " + messages_q[0].Text
+				chatMessages.SetText(newText)
+
+				// Удаляем обработанное сообщение из очереди
+				messages_q = messages_q[1:]
+			}
+
+			// Добавьте небольшую задержку, чтобы не перегружать CPU
+			time.Sleep(100 * time.Millisecond)
+		}
+	}()
 	userListLabel := widget.NewLabel("")
 	userList := []string{}
 	userEntry := widget.NewEntry()
@@ -125,6 +179,22 @@ func main() {
 	}
 
 	newChatButton := widget.NewButton("New chat", func() {
+		u := url.URL{Scheme: "ws", Host: "localhost:8080", Path: "/chat/new"}
+		headers := http.Header{}
+		headers.Add("Authorization", token)
+		headers.Add("invited_users", strings.Join(userList, ","))
+
+		dialer := websocket.DefaultDialer
+		var err error
+		conn, _, err = dialer.Dial(u.String(), headers)
+		if err != nil {
+			log.Fatal("Ошибка подключения:", err)
+		}
+		// defer c.Close()
+
+		go readWsMessage(conn, &messages_q)
+
+		mainWindow.SetContent(chatWindow)
 
 	})
 
@@ -134,6 +204,7 @@ func main() {
 	connectToChatButton := widget.NewButton("Connect", func() {
 
 	})
+
 	chatMenuWindow := container.NewVBox(
 		widget.NewLabelWithStyle("Start New Chat", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		userListLabel,
@@ -330,4 +401,34 @@ func main() {
 	mainWindow.SetContent(authWindow)
 
 	mainWindow.ShowAndRun()
+}
+
+func sendWsMessage(c *websocket.Conn, message string) {
+	data := WsMessage{
+		Text: message,
+	}
+
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		log.Fatal("Ошибка преобразования в JSON:", err)
+	}
+
+	err = c.WriteMessage(websocket.TextMessage, jsonData)
+	if err != nil {
+		log.Println("Ошибка отправки:", err)
+		return
+	}
+
+}
+
+func readWsMessage(c *websocket.Conn, messages *[]WsInclomingMessage) {
+	for {
+		data := WsInclomingMessage{}
+		err := c.ReadJSON(&data)
+		if err != nil {
+			log.Fatal("Ошибка чтения JSON:", err)
+		}
+		*messages = append(*messages, data)
+	}
+
 }
