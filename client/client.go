@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -20,6 +21,11 @@ type AuthResponse struct {
 }
 
 type RegResponse struct {
+	Success string `json:"success"`
+	Error   string `json:"error"`
+}
+
+type SendResponse struct {
 	Success string `json:"success"`
 	Error   string `json:"error"`
 }
@@ -92,8 +98,52 @@ func main() {
 		}
 
 		// Convert response body to a string and set it in the widget
-		responseLabel.SetText("Server response:\n" + string(body))
+		// responseLabel.SetText("Server response:\n" + string(body))
+		var sendResponse SendResponse
+		if err := json.Unmarshal(body, &sendResponse); err != nil {
+			fmt.Println("JSON unmarshaling error:", err)
+			return
+		}
+		if sendResponse.Error != "" {
+			responseLabel.SetText(sendResponse.Error)
+		} else {
+			responseLabel.SetText(sendResponse.Success)
+		}
 	})
+
+	userListLabel := widget.NewLabel("")
+	userList := []string{}
+	userEntry := widget.NewEntry()
+	userEntry.SetPlaceHolder("Enter name of user to invite...")
+
+	userEntry.OnSubmitted = func(text string) {
+		if text != "" {
+			userList = append(userList, text)
+			userListLabel.SetText(strings.Join(userList, " | "))
+			userEntry.SetText("")
+		}
+	}
+
+	newChatButton := widget.NewButton("New chat", func() {
+
+	})
+
+	roomIdEntry := widget.NewEntry() // форма для ввода рум айди для подключения к чату
+	roomIdEntry.SetPlaceHolder("Enter room ID...")
+
+	connectToChatButton := widget.NewButton("Connect", func() {
+
+	})
+	chatMenuWindow := container.NewVBox(
+		widget.NewLabelWithStyle("Start New Chat", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		userListLabel,
+		userEntry,
+		newChatButton,
+		widget.NewLabel(""),
+		widget.NewLabelWithStyle("Connect To Chat", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		roomIdEntry,
+		connectToChatButton,
+	)
 
 	messageWindow := container.NewVBox(
 		widget.NewLabel("Recipient"),
@@ -243,8 +293,9 @@ func main() {
 		if token != "" {
 			// If login is successful, switch the content to the message window
 			mainWindow.SetContent(container.NewAppTabs(
-				container.NewTabItem("Messages", messageWindow),
+				container.NewTabItem("Send Messages", messageWindow),
 				container.NewTabItem("Get Messages", getMessagesWindow),
+				container.NewTabItem("Chat", chatMenuWindow),
 			))
 		} else {
 			// If the token is empty, display an error message in the registration and authentication window
@@ -266,8 +317,9 @@ func main() {
 
 	// Create tabs
 	tabs := container.NewAppTabs(
-		container.NewTabItem("Messages", messageWindow),
-		container.NewTabItem("Get Messages", getMessagesWindow),
+		// container.NewTabItem("Messages", messageWindow),
+		// container.NewTabItem("Get Messages", getMessagesWindow),
+		// container.NewTabItem("Chat", chatMenuWindow),
 		container.NewTabItem("Auth", authWindow),
 	)
 
