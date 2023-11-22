@@ -32,7 +32,9 @@ bool AuthClient::registerUser(const std::string& username, const std::string& pa
         grpc::Status status = stub_->registerUser(&context, request, &response);
         
         if (!status.ok()) {
-          
+          std::cout << "Register error: " << status.error_message() << std::endl;
+          error = status.error_message();
+          return false;
         }
 
         return response.success();

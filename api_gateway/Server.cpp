@@ -177,6 +177,7 @@ void Server::handleRegisterRequest(const http::request<http::string_body> &reque
   _auth.registerUser(json_body["username"], json_body["password"], error);        
   if (!error.empty()) {
     sendErrorResponse(clientSocket, http::status::bad_request, error, request.version());
+    return;
   }
   
   http::response<http::string_body> response;
@@ -184,6 +185,9 @@ void Server::handleRegisterRequest(const http::request<http::string_body> &reque
   response.version(request.version());
   response.set(http::field::server, "Server 0.2");
   response.set(http::field::content_type, "application/json");
+  nlohmann::json body;
+  body["success"] = "Successfuly registered ";
+  response.body() = body.dump();
 
   try {
     http::write(clientSocket, response);

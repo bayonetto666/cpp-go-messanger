@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
@@ -16,6 +17,11 @@ var token string
 
 type AuthResponse struct {
 	Token string `json:"token"`
+}
+
+type RegResponse struct {
+	Success string `json:"success"`
+	Error   string `json:"error"`
 }
 
 type Credentials struct {
@@ -36,15 +42,19 @@ type Message struct {
 func main() {
 	a := app.New()
 
-	// Основное окно
+	// Main window
 	mainWindow := a.NewWindow("Chat App")
-
-	// Окно сообщений
+	size := fyne.Size{
+		Width:  600.0,
+		Height: 500.0,
+	}
+	mainWindow.Resize(size)
+	// Message window
 	recipientEntry := widget.NewEntry()
 	messageEntry := widget.NewMultiLineEntry()
-	responseLabel := widget.NewLabel("") // Метка для отображения ответа сервера
+	responseLabel := widget.NewLabel("")
 	sendButton := widget.NewButton("Send", func() {
-		// Логика отправки сообщения
+		// Logic for sending a message
 		recipient := recipientEntry.Text
 		message := messageEntry.Text
 
@@ -55,36 +65,34 @@ func main() {
 
 		jsonData, err := json.Marshal(sendData)
 		if err != nil {
-			fmt.Println("Ошибка при маршалинге JSON:", err)
+			fmt.Println("JSON marshaling error:", err)
 			return
 		}
 
 		client := &http.Client{}
 		req, err := http.NewRequest("POST", "http://127.0.0.1:8080/messages", bytes.NewBuffer(jsonData))
 		if err != nil {
-			fmt.Println("Ошибка при создании запроса:", err)
+			fmt.Println("Error creating request:", err)
 			return
 		}
 
-		// Добавляем заголовок Authorization
 		req.Header.Set("Authorization", token)
 
-		// Выполняем запрос
 		response, err := client.Do(req)
 		if err != nil {
-			fmt.Println("Ошибка при выполнении POST-запроса:", err)
+			fmt.Println("Error executing POST request:", err)
 			return
 		}
 
 		defer response.Body.Close()
 		body, err := io.ReadAll(response.Body)
 		if err != nil {
-			fmt.Println("Ошибка при чтении тела ответа:", err)
+			fmt.Println("Error reading response body:", err)
 			return
 		}
 
-		// Преобразуем тело ответа в строку и устанавливаем в виджет
-		responseLabel.SetText("Ответ сервера:\n" + string(body))
+		// Convert response body to a string and set it in the widget
+		responseLabel.SetText("Server response:\n" + string(body))
 	})
 
 	messageWindow := container.NewVBox(
@@ -93,27 +101,25 @@ func main() {
 		widget.NewLabel("Message"),
 		messageEntry,
 		sendButton,
-		responseLabel, // Метка для отображения ответа сервера
+		responseLabel, // Widget to display server response
 	)
 
-	// Окно для получения сообщений
+	// Window for retrieving messages
 	getMessagesLabel := widget.NewLabel("")
 	getMessagesButton := widget.NewButton("Get Messages", func() {
-		// Логика получения сообщений
+		// Logic for retrieving messages
 		client := &http.Client{}
 		req, err := http.NewRequest("GET", "http://127.0.0.1:8080/messages", nil)
 		if err != nil {
-			fmt.Println("Ошибка при создании запроса:", err)
+			fmt.Println("Error creating request:", err)
 			return
 		}
 
-		// Добавляем заголовок Authorization
 		req.Header.Set("Authorization", token)
 
-		// Выполняем запрос
 		response, err := client.Do(req)
 		if err != nil {
-			fmt.Println("Ошибка при выполнении GET-запроса:", err)
+			fmt.Println("Error executing GET request:", err)
 			return
 		}
 
@@ -126,22 +132,22 @@ func main() {
 			if err := decoder.Decode(&msg); err == io.EOF {
 				break
 			} else if err != nil {
-				fmt.Println("Ошибка при декодировании JSON:", err)
+				fmt.Println("Error decoding JSON:", err)
 				return
 			}
 
 			messages = append(messages, msg)
 		}
 
-		// Отображаем сообщения или сообщение об их отсутствии
+		// Display messages or a message indicating their absence
 		if len(messages) > 0 {
-			messageText := "Входящие сообщения:\n"
+			messageText := "Incoming messages:\n"
 			for _, msg := range messages {
 				messageText += fmt.Sprintf("%s: %s\n", msg.Sender, msg.Text)
 			}
 			getMessagesLabel.SetText(messageText)
 		} else {
-			getMessagesLabel.SetText("Входящих сообщений нет.")
+			getMessagesLabel.SetText("No incoming messages.")
 		}
 	})
 
@@ -150,20 +156,18 @@ func main() {
 		getMessagesLabel,
 	)
 
-	// Окно регистрации и аутентификации
+	// Window for registration and authentication
 	usernameEntry := widget.NewEntry()
 	passwordEntry := widget.NewPasswordEntry()
-	serverResponseLabel := widget.NewLabel("") // Метка для отображения ответа сервера
+	serverResponseLabel := widget.NewLabel("") // Widget to display server response
 	registerButton := widget.NewButton("Register", func() {
-		// Логика регистрации
-	})
-	loginButton := widget.NewButton("Login", func() {
+		// Logic for registration
 		username := usernameEntry.Text
 		password := passwordEntry.Text
 
-		// Проверяем, что поля не пустые
+		// Check that fields are not empty
 		if username == "" || password == "" {
-			serverResponseLabel.SetText("Введите имя пользователя и пароль.")
+			serverResponseLabel.SetText("Enter a username and password.")
 			return
 		}
 		credentials := Credentials{
@@ -172,39 +176,79 @@ func main() {
 		}
 		jsonData, err := json.Marshal(credentials)
 		if err != nil {
-			fmt.Println("Ошибка при маршалинге JSON:", err)
+			fmt.Println("JSON marshaling error:", err)
 			return
 		}
-		response, err := http.Post("http://127.0.0.1:8080/auth/login", "application/json", bytes.NewBuffer(jsonData))
+		response, err := http.Post("http://127.0.0.1:8080/auth/register", "application/json", bytes.NewBuffer(jsonData))
 		if err != nil {
-			fmt.Println("Ошибка при выполнении POST-запроса:", err)
+			fmt.Println("Error executing POST request:", err)
 			return
 		}
 		defer response.Body.Close()
 		body, err := io.ReadAll(response.Body)
 		if err != nil {
-			fmt.Println("Ошибка при чтении тела ответа:", err)
+			fmt.Println("Error reading response body:", err)
 			return
 		}
-		// Декодируем тело ответа в структуру AuthResponse
+		// Decode response body into AuthResponse structure
+		// var authResponse AuthResponse
+		var registerResponse RegResponse
+		if err := json.Unmarshal(body, &registerResponse); err != nil {
+			fmt.Println("JSON unmarshaling error:", err)
+			return
+		}
+		if registerResponse.Error != "" {
+			serverResponseLabel.SetText(registerResponse.Error)
+		} else {
+			serverResponseLabel.SetText(registerResponse.Success)
+		}
+	})
+	loginButton := widget.NewButton("Login", func() {
+		username := usernameEntry.Text
+		password := passwordEntry.Text
+
+		// Check that fields are not empty
+		if username == "" || password == "" {
+			serverResponseLabel.SetText("Enter a username and password.")
+			return
+		}
+		credentials := Credentials{
+			Username: username,
+			Password: password,
+		}
+		jsonData, err := json.Marshal(credentials)
+		if err != nil {
+			fmt.Println("JSON marshaling error:", err)
+			return
+		}
+		response, err := http.Post("http://127.0.0.1:8080/auth/login", "application/json", bytes.NewBuffer(jsonData))
+		if err != nil {
+			fmt.Println("Error executing POST request:", err)
+			return
+		}
+		defer response.Body.Close()
+		body, err := io.ReadAll(response.Body)
+		if err != nil {
+			fmt.Println("Error reading response body:", err)
+			return
+		}
+		// Decode response body into AuthResponse structure
 		var authResponse AuthResponse
 		if err := json.Unmarshal(body, &authResponse); err != nil {
-			fmt.Println("Ошибка при декодировании JSON:", err)
+			fmt.Println("JSON unmarshaling error:", err)
 			return
 		}
 
-		// Извлекаем токен и устанавливаем его в глобальной переменной
 		token = authResponse.Token
-		// Проверяем, не пуст ли токен
 		if token != "" {
-			// Если вход успешен, заменяем содержимое окна аутентификации на окно сообщений
+			// If login is successful, switch the content to the message window
 			mainWindow.SetContent(container.NewAppTabs(
 				container.NewTabItem("Messages", messageWindow),
 				container.NewTabItem("Get Messages", getMessagesWindow),
 			))
 		} else {
-			// Если токен пуст, выводим сообщение об ошибке в окне регистрации и аутентификации
-			serverResponseLabel.SetText("Ошибка входа: токен пуст.")
+			// If the token is empty, display an error message in the registration and authentication window
+			serverResponseLabel.SetText("Login error.")
 		}
 	})
 
@@ -217,20 +261,20 @@ func main() {
 			registerButton,
 			loginButton,
 		),
-		serverResponseLabel, // Метка для отображения ответа сервера
+		serverResponseLabel, // Widget to display server response
 	)
 
-	// Создаем вкладки
+	// Create tabs
 	tabs := container.NewAppTabs(
 		container.NewTabItem("Messages", messageWindow),
 		container.NewTabItem("Get Messages", getMessagesWindow),
 		container.NewTabItem("Auth", authWindow),
 	)
 
-	// Устанавливаем вкладки в основное окно
+	// Set tabs in the main window
 	mainWindow.SetContent(tabs)
 
-	// Показываем только окно аутентификации при запуске
+	// Show only the authentication window on launch
 	mainWindow.SetContent(authWindow)
 
 	mainWindow.ShowAndRun()
