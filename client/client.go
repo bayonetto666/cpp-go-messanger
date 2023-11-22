@@ -16,6 +16,9 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+
+	// "fyne.io/fyne/v2/theme"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -68,7 +71,7 @@ func main() {
 	mainWindow := a.NewWindow("Chat App")
 	size := fyne.Size{
 		Width:  600.0,
-		Height: 500.0,
+		Height: 300.0,
 	}
 	mainWindow.Resize(size)
 	// Message window
@@ -128,7 +131,7 @@ func main() {
 	})
 
 	// Окно для чата
-	chatMessages := widget.NewLabel("")
+	chatMessages := widget.NewMultiLineEntry()
 	chatEntry := widget.NewEntry()
 	chatEntry.SetPlaceHolder("Enter your message...")
 	// chatLabel := widget.NewLabel("")
@@ -141,34 +144,29 @@ func main() {
 		}
 	})
 
-	// Создаем окно для чата
 	chatWindow := container.NewVBox(
-		chatMessages, // Виджет для отображения сообщений
-		// chatLabel,
+		chatMessages,
 		chatEntry,
 		chatSendButton,
 	)
 
 	go func() {
 		for {
-			// Проверяем наличие новых сообщений
 			if len(messages_q) > 0 {
-				// Обновляем виджет с сообщениями
 				newText := chatMessages.Text + "\n" + messages_q[0].Username + ": " + messages_q[0].Text
 				chatMessages.SetText(newText)
 
-				// Удаляем обработанное сообщение из очереди
 				messages_q = messages_q[1:]
 			}
 
-			// Добавьте небольшую задержку, чтобы не перегружать CPU
 			time.Sleep(100 * time.Millisecond)
 		}
 	}()
 	userListLabel := widget.NewLabel("")
 	userList := []string{}
+	errorLabel := widget.NewLabel("")
 	userEntry := widget.NewEntry()
-	userEntry.SetPlaceHolder("Enter name of user to invite...")
+	userEntry.SetPlaceHolder("Enter name of user to invite...(press Enter)")
 
 	userEntry.OnSubmitted = func(text string) {
 		if text != "" {
@@ -179,6 +177,11 @@ func main() {
 	}
 
 	newChatButton := widget.NewButton("New chat", func() {
+		if len(userList) == 0 {
+			errorLabel.SetText("No users invited")
+			return
+		}
+
 		u := url.URL{Scheme: "ws", Host: "localhost:8080", Path: "/chat/new"}
 		headers := http.Header{}
 		headers.Add("Authorization", token)
@@ -226,7 +229,8 @@ func main() {
 		userListLabel,
 		userEntry,
 		newChatButton,
-		widget.NewLabel(""),
+		// widget.NewLabel(""),
+		errorLabel,
 		widget.NewLabelWithStyle("Connect To Chat", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		roomIdEntry,
 		connectToChatButton,
@@ -242,7 +246,9 @@ func main() {
 	)
 
 	// Window for retrieving messages
-	getMessagesLabel := widget.NewLabel("")
+	getMessagesText := widget.NewMultiLineEntry()
+	getMessagesText.Wrapping = fyne.TextWrapWord
+
 	getMessagesButton := widget.NewButton("Get Messages", func() {
 		// Logic for retrieving messages
 		client := &http.Client{}
@@ -278,19 +284,19 @@ func main() {
 
 		// Display messages or a message indicating their absence
 		if len(messages) > 0 {
-			messageText := "Incoming messages:\n"
+			var messageText strings.Builder
 			for _, msg := range messages {
-				messageText += fmt.Sprintf("%s: %s\n", msg.Sender, msg.Text)
+				messageText.WriteString(fmt.Sprintf("%s: %s\n", msg.Sender, msg.Text))
 			}
-			getMessagesLabel.SetText(messageText)
+			getMessagesText.SetText(messageText.String())
 		} else {
-			getMessagesLabel.SetText("No incoming messages.")
+			getMessagesText.SetText("No incoming messages.")
 		}
 	})
 
 	getMessagesWindow := container.NewVBox(
 		getMessagesButton,
-		getMessagesLabel,
+		getMessagesText,
 	)
 
 	// Window for registration and authentication
@@ -395,18 +401,18 @@ func main() {
 		usernameEntry,
 		widget.NewLabel("Password"),
 		passwordEntry,
-		container.NewHBox(
-			registerButton,
-			loginButton,
-		),
+		// container.NewHBox(
+		// 	registerButton,
+		// 	loginButton,
+		// ),
+		registerButton,
+		loginButton,
 		serverResponseLabel, // Widget to display server response
 	)
 
 	// Create tabs
 	tabs := container.NewAppTabs(
-		// container.NewTabItem("Messages", messageWindow),
-		// container.NewTabItem("Get Messages", getMessagesWindow),
-		// container.NewTabItem("Chat", chatMenuWindow),
+
 		container.NewTabItem("Auth", authWindow),
 	)
 
