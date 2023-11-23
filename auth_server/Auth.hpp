@@ -17,7 +17,7 @@
 
 class Auth {
 public:
-    Auth(const std::string& db_adress, const std::string& secret_key);
+    Auth(const std::string& db_address, const std::string& secret_key);
 
     std::string authUser(const std::string& username, const std::string& password, std::string& error);
     
