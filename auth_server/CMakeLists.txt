@@ -12,24 +12,25 @@ set(CMAKE_PREFIX_PATH "$MY_INSTALL_DIR")
 
 # Укажите, какие исходники следует включить в проект
 set(SOURCE_FILES
-    main.cpp
-    Auth.cpp
-    Hasher.cpp
-    DatabaseHandler.pb.cc
-    DatabaseHandler.grpc.pb.cc
-    AuthServer.grpc.pb.cc
-    AuthServer.pb.cc
+  main.cpp
+  Auth.cpp
+  Hasher.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/DatabaseHandler.pb.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/DatabaseHandler.grpc.pb.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/AuthServer.grpc.pb.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/AuthServer.pb.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/DBClient.cpp
 )
 
 
 # Добавьте пути к заголовочным файлам и библиотекам
 include_directories(
-    /opt/homebrew/Cellar/argon2/20190702_1/include
-    /Users/kiryl/Documents/cpplibs/jwt-cpp-master/include
-    /opt/homebrew/Cellar/openssl@3/3.1.4/include
-    /opt/homebrew/Cellar/nlohmann-json/3.11.2/include
-    /Users/kiryl/.local/include
-
+  /opt/homebrew/Cellar/argon2/20190702_1/include
+  /Users/kiryl/Documents/cpplibs/jwt-cpp-master/include
+  /opt/homebrew/Cellar/openssl@3/3.1.4/include
+  /opt/homebrew/Cellar/nlohmann-json/3.11.2/include
+  /Users/kiryl/.local/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/
 )
 
 link_directories(

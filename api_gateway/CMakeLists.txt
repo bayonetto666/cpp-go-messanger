@@ -8,37 +8,32 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v")
 set(CMAKE_PREFIX_PATH "$MY_INSTALL_DIR")
 
-
+# Добавьте пути к заголовочным файлам и библиотекам
+include_directories(
+  /opt/homebrew/Cellar/boost/1.82.0_1/include
+  /Users/kiryl/Documents/cpplibs/jwt-cpp-master/include
+  /opt/homebrew/Cellar/openssl@3/3.1.4/include
+  /opt/homebrew/Cellar/nlohmann-json/3.11.2/include
+  /Users/kiryl/.local/include
+  /Users/kiryl/.local/include/google
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common
+)
 
 # Укажите, какие исходники следует включить в проект
 set(SOURCE_FILES
-    main.cpp
-    Server.cpp
-    DBClient.cpp
-    AuthClient.cpp
-    ChatClient.cpp
-    websocket_proxy.cpp 
-    # DatabaseHandler.pb.cc
-    # DatabaseHandler.grpc.pb.cc
-    # AuthServer.grpc.pb.cc
-    # AuthServer.pb.cc
+  main.cpp
+  Server.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/DBClient.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/AuthClient.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/ChatClient.cpp
+  websocket_proxy.cpp 
 )
 
-
-# Добавьте пути к заголовочным файлам и библиотекам
-include_directories(
-    /opt/homebrew/Cellar/boost/1.82.0_1/include
-    /Users/kiryl/Documents/cpplibs/jwt-cpp-master/include
-    /opt/homebrew/Cellar/openssl@3/3.1.4/include
-    /opt/homebrew/Cellar/nlohmann-json/3.11.2/include
-    /Users/kiryl/.local/include
-    /Users/kiryl/.local/include/google
-)
 
 link_directories(
-    /opt/homebrew/Cellar/openssl@3/3.1.4/lib
-    /Users/kiryl/.local/lib
-    /opt/homebrew/Cellar/boost/1.82.0_1/lib
+  /opt/homebrew/Cellar/openssl@3/3.1.4/lib
+  /Users/kiryl/.local/lib
+  /opt/homebrew/Cellar/boost/1.82.0_1/lib
 )
 
 add_executable(api_gateway ${SOURCE_FILES})
@@ -47,21 +42,21 @@ find_library(CORE_FOUNDATION CoreFoundation)
 find_library(LIBCARES cares)
 
 add_library(AuthenticationLib STATIC 
-    AuthServer.pb.cc
-    AuthServer.grpc.pb.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/AuthServer.pb.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/AuthServer.grpc.pb.cc
 )
 target_include_directories(AuthenticationLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})  # Добавьте эту строку
 
 add_library(DatabaseLib STATIC 
-    DatabaseHandler.pb.cc
-    DatabaseHandler.grpc.pb.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/DatabaseHandler.pb.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/DatabaseHandler.grpc.pb.cc
 )
 
 target_include_directories(DatabaseLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})  # Добавьте эту строку
 
 add_library(ChatLib STATIC
-    ChatServer.pb.cc
-    ChatServer.grpc.pb.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/ChatServer.pb.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/ChatServer.grpc.pb.cc
 )
 
 target_include_directories(ChatLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})  # Добавьте эту строку

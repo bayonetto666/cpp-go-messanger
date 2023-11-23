@@ -13,26 +13,27 @@ set(ENV{DYLD_LIBRARY_PATH} "/opt/homebrew/opt/zlib/lib:$ENV{DYLD_LIBRARY_PATH}")
 
 # Define the source files
 set(SOURCE_FILES
-    main.cpp
-    DatabaseHandler.cpp
-    DatabaseHandler.pb.cc
-    DatabaseHandler.grpc.pb.cc
+  main.cpp
+  DatabaseHandler.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/DatabaseHandler.pb.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/DatabaseHandler.grpc.pb.cc
 )
 
 # Define the include directories
 include_directories(
-    /opt/homebrew/Cellar/openssl@3/3.1.4/include
-    /opt/homebrew/Cellar/nlohmann-json/3.11.2/include
-    /opt/homebrew/Cellar/mongo-cxx-driver/3.8.1/include/bsoncxx/v_noabi
-    /opt/homebrew/Cellar/mongo-cxx-driver/3.8.1/include/mongocxx/v_noabi
-    /Users/kiryl/.local/include
+  /opt/homebrew/Cellar/openssl@3/3.1.4/include
+  /opt/homebrew/Cellar/nlohmann-json/3.11.2/include
+  /opt/homebrew/Cellar/mongo-cxx-driver/3.8.1/include/bsoncxx/v_noabi
+  /opt/homebrew/Cellar/mongo-cxx-driver/3.8.1/include/mongocxx/v_noabi
+  /Users/kiryl/.local/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/../common/
 )
 
 # Define the   rary directories
 link_directories(
-    /opt/homebrew/Cellar/openssl@3/3.1.4/lib
-    /opt/homebrew/Cellar/mongo-cxx-driver/3.8.1/lib
-    /Users/kiryl/.local/lib
+  /opt/homebrew/Cellar/openssl@3/3.1.4/lib
+  /opt/homebrew/Cellar/mongo-cxx-driver/3.8.1/lib
+  /Users/kiryl/.local/lib
 )
 
 # Define the target executable

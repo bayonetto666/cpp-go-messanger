@@ -82,3 +82,19 @@ std::vector<Message> DBClient::GetMessages(const std::string &username) {
   }
   return messages;
 }
+std::pair<std::string,std::string> DBClient::GetPassword(const std::string& username, std::string& error){
+        grpc::ClientContext context;
+        GetPasswordRequest request;
+        request.set_username(username);
+        GetPasswordResponse response;
+        grpc::Status status = stub_->GetPassword(&context, request, &response);
+        
+        if (status.ok()) {
+            return std::make_pair(response.hashed_password(), response.salt());
+        } else {
+            std::cerr << "Error: " << status.error_message() << std::endl;
+            error = status.error_message();
+            return std::make_pair("", "");
+        }
+    }
+
