@@ -9,7 +9,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_PREFIX_PATH "$MY_INSTALL_DIR")
 
 
-
 # Укажите, какие исходники следует включить в проект
 set(SOURCE_FILES
   main.cpp
@@ -22,7 +21,6 @@ set(SOURCE_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/../common/DBClient.cpp
 )
 
-
 # Добавьте пути к заголовочным файлам и библиотекам
 include_directories(
   /opt/homebrew/Cellar/argon2/20190702_1/include
@@ -34,9 +32,9 @@ include_directories(
 )
 
 link_directories(
-    /opt/homebrew/Cellar/openssl@3/3.1.4/lib
-    /Users/kiryl/.local/lib
-    /opt/homebrew/Cellar/argon2/20190702_1/lib
+  /opt/homebrew/Cellar/openssl@3/3.1.4/lib
+  /Users/kiryl/.local/lib
+  /opt/homebrew/Cellar/argon2/20190702_1/lib
 )
 
 add_executable(auth_server ${SOURCE_FILES})
