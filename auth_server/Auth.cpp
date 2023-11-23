@@ -1,5 +1,8 @@
 #include "Auth.hpp"
 
+Auth::Auth(const std::string& db_address, const std::string &secret_key) : _secretKey(secret_key), _db(db_address)
+{}
+
 std::string Auth::generateJWT(const std::string& subject) {
     try {
         auto token = jwt::create<traits>()
@@ -17,13 +20,8 @@ std::string Auth::generateJWT(const std::string& subject) {
     }
 }
 
-Auth::Auth(const std::string& db_adress, const std::string &secret_key) : _secretKey(secret_key), _db(db_adress)
-{}
-
 std::string Auth::authUser(const std::string &username, const std::string &password, std::string &error)
 {
-    try
-    {
         auto password_data = _db.GetPassword(username, error);
 
         if(!error.empty()){
@@ -39,36 +37,19 @@ std::string Auth::authUser(const std::string &username, const std::string &passw
         }
 
         return generateJWT(username);
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-        error = e.what();
-    }
-    
-    
-
 }
 
 bool Auth::registerUser(const std::string& username, const std::string& password,  std::string& error){
     /*....*/
-    std::string ec;
-    if (!validateUsername(username, ec)){
-        error = ec;
+    if (!validateUsername(username, error)){
         return false;
     }
-    if (!validatePassword(password, ec)){
-        error = ec;
+    if (!validatePassword(password, error)){
         return false;
     }
 
     std::pair<std::string, std::string> hashed_password = Hasher::hashPassword(password);
 
-    // nlohmann::json userData;
-    // userData["username"] = username;
-    // userData["password"] = hashed_password.first;
-    // userData["salt"] = hashed_password.second;
-    //отправка на сервер БД
     _db.insertUser(username, hashed_password.first, hashed_password.second);
 
     return true;
@@ -93,8 +74,7 @@ bool Auth::verifyJWT(const std::string& token, std::string& error){
 std::string Auth::getSubject(const std::string& token, std::string& error) {
     try {
         const auto decoded = jwt::decode<traits>(token);
-
-        // Проверьте, что токен был подписан с использованием правильного секретного ключа
+        
         jwt::verify()
             .allow_algorithm(jwt::algorithm::hs256{_secretKey})
             .verify(decoded);
@@ -120,8 +100,8 @@ bool Auth::validatePassword(const std::string& password, std::string& error){
     return true;
 }
 bool Auth::validateUsername(const std::string& username, std::string& error){
-    if (username.size() < 5 || username.size() > 15 ) {
-        error = "Username length must be between 5 and 15 characters.";
+    if (username.size() < 5 || username.size() > 10 ) {
+        error = "Username length must be between 5 and 10 characters.";
         return false;
     }
     if(_db.UserExists(username)){

@@ -56,26 +56,6 @@ public:
             throw std::runtime_error("Error grpc" + status.error_details());
         }
     }
-    // // void StoreMessage(){}
-
-    // std::vector<Message> GetMessages(const std::string& username){
-    //     //GetMessagesRequest request
-    //     GetMessagesRequset request; //нужно будет пофиксить в прото файле
-    //     request.set_user(username);
-        
-    //     std::vector<Message> messages;
-    //     while (reader->Read(&message)) {
-    //     messages.push_back(message);
-    //     }
-    //     // Далее, отправьте сообщения на API Gateway.
-    //     // if (!messages.empty()) {
-
-    //     // }
-    //     return messages;
-    // }
-
-   
-
 
 private:
     std::unique_ptr<Database::Stub> stub_;
