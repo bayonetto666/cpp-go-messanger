@@ -1,4 +1,3 @@
-# Игнорировать временные файлы и каталоги
 *.swp
 *.swo
 *.swn
@@ -18,7 +17,6 @@ api_gateway/CMakeLists.txt
 auth_server/CMakeLists.txt
 database_server/CMakeLists.txt
 
-# Игнорировать файлы и каталоги, создаваемые средой разработки
 .vscode/
 *.suo
 *.user
@@ -29,14 +27,12 @@ database_server/CMakeLists.txt
 *.plist
 *.dSYM
 
-# Игнорировать зависимости и бинарные файлы
 vendor/
 *.exe
 *.dll
 *.so
 *.dylib
 
-# Игнорировать временные и создаваемые файлы в папке сборки
 *.log
 *.tmp
 api_gateway/cpp.txt
