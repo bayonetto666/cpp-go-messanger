@@ -2,6 +2,6 @@ go 1.21.3
 
 use (
 	./chat_server
-	./chat_server/github.com/bayonetto666/messanger/protos
+	// ./chat_server/github.com/bayonetto666/messanger/protos
   ./client
 )
