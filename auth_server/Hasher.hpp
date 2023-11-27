@@ -7,6 +7,7 @@
 #include <random>
 #include <iomanip>
 #include <sstream>
+#include <cstring>
 
 class Hasher {
 public:

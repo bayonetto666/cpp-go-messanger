@@ -1,6 +1,6 @@
 #include <iostream>
 #include <grpc++/grpc++.h>
-#include "AuthServise.hpp"
+#include "AuthService.hpp"
 
 int main() {
     

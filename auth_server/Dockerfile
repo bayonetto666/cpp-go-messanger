@@ -29,14 +29,20 @@ RUN apt install -y openssl
 RUN apt install -y libssl-dev
 
 RUN wget -O boost_1_82_0.tar.gz https://sourceforge.net/projects/boost/files/boost/1.82.0/boost_1_82_0.tar.gz/download
-
 RUN tar -xvzf boost_1_82_0.tar.gz -C .
 
+RUN git clone https://github.com/Thalhammer/jwt-cpp
 
-COPY ["api_gateway/CMakeLists.txt", "api_gateway/Server.cpp", "api_gateway/Server.hpp", "api_gateway/main.cpp", "api_gateway/websocket_proxy.cpp", "api_gateway/websocket_proxy.hpp", "/"]
+RUN git clone https://github.com/P-H-C/phc-winner-argon2
+WORKDIR /phc-winner-argon2
+RUN make
+
+
+WORKDIR /
+COPY ["auth_server/CMakeLists.txt", "auth_server/Auth.cpp", "auth_server/Auth.hpp", "auth_server/main.cpp", "auth_server/Hasher.cpp", "auth_server/Hasher.hpp", "auth_server/main.cpp", "auth_server/AuthService.hpp", "/"]
 COPY ../common /common
 
 RUN cmake  ..
 RUN make
 
-CMD ["./api_gateway"]
+CMD ["./auth_server"]
