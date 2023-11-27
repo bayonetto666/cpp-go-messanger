@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"sync"
 
-	protos "protos"
+	protos "github.com/bayonetto666/cpp-go-messanger/tree/main/protos"
 
 	empty "github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/uuid"
