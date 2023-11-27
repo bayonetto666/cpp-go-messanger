@@ -3,7 +3,7 @@
 Server::Server()
   : _context(),
     _serverSocket(_context),
-    _serverEndpoint(asio::ip::make_address("127.0.0.1"), 8080),
+    _serverEndpoint(asio::ip::make_address("0.0.0.0"), 8080),
     _acceptor(_context, _serverEndpoint),
     _isRunning(true),
     _db("0.0.0.0:50051"),
