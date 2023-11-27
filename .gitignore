@@ -13,6 +13,9 @@ proto.txt
 123.txt
 cpp.txt
 *.drawio
+api_gateway/CMakeLists.txt
+auth_server/CMakeLists.txt
+database_server/CMakeLists.txt
 
 .vscode/
 *.suo
@@ -34,4 +37,6 @@ vendor/
 *.tmp
 api_gateway/cpp.txt
 client/__debug_bin3503490810
+unused
+cmake.txt
 unused

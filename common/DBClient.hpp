@@ -20,6 +20,8 @@ public:
 
     std::vector<Message> GetMessages(const std::string& username);
 
+    std::pair<std::string,std::string> GetPassword(const std::string& username, std::string& error);
+
 private:
     std::unique_ptr<Database::Stub> stub_;
     std::shared_ptr<grpc::Channel> channel_;
