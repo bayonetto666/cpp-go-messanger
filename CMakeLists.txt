@@ -5,12 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
-
 # External libraries paths
-set(ARGON2_PATH "")
-set(JWT_MASTER_PATH "")
-
-include(${CMAKE_CURRENT_SOURCE_DIR}/common.cmake)
+set(ARGON2_PATH "path/to/argon2")
+set(JWT_CPP_PATH "path/to/jwr-cpp")
 
 # Common source files
 set(COMMON_SOURCE_FILES
@@ -65,7 +62,7 @@ find_package(OpenSSL REQUIRED)
 include_directories(
   common/
   ${ARGON2_PATH}/include
-  ${JWT_MASTER_PATH}/include
+  ${JWT_CPP_PATH}/include
   
 )
 
