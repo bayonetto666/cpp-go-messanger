@@ -29,6 +29,14 @@ This project relies on the following dependencies:
 There are at least two different methods to install and use this project:
 
 1) Build using CMake and Make
+   
+Before building, make sure to set the ARGON2_PATH and JWT_CPP_PATH variables in the main CMakeLists file.
+
+```cmake
+set(ARGON2_PATH "path/to/argon2")
+set(JWT_CPP_PATH "path/to/jwt-cpp")
+```
+Then, proceed with the following commands:
 ```bash
   make generate
   mkdir -p build
