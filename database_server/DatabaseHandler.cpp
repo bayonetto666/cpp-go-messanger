@@ -52,8 +52,8 @@ std::pair<std::string, std::string> DatabaseHandler::getPassword(const std::stri
     if (maybeUser) {
         bsoncxx::document::view user = maybeUser->view();
         if (user.find("password") != user.end() && user.find("salt") != user.end()) {
-            storedPassword = user["password"].get_string().value.to_string();
-            storedSalt = user["salt"].get_string().value.to_string();            
+            storedPassword = user["password"].get_string();
+            storedSalt = user["salt"].get_string();            
         } else {
             // Поля "password" и/или "salt" отсутствуют в записи пользователя
             // Обработка ошибки
@@ -105,9 +105,9 @@ nlohmann::json DatabaseHandler::getMessages(const std::string &username, std::st
 
         for (const auto& message : found_messages) {
             nlohmann::json message_json;
-            message_json["sender"] = message["sender"].get_string().value.to_string();
-            message_json["text"] = message["text"].get_string().value.to_string();
-            message_json["date"] = message["date"].get_string().value.to_string();
+            message_json["sender"] = message["sender"].get_string();
+            message_json["text"] = message["text"].get_string();
+            message_json["date"] = message["date"].get_string();
 
             markMessageAsRead(message["_id"].get_oid().value.to_string());
 
