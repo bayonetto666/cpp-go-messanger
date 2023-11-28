@@ -25,26 +25,23 @@
 
 class DatabaseHandler {
 public:
-    DatabaseHandler(const std::string& connection_uri);
+  DatabaseHandler(const std::string& connection_uri);
     
-    void insertUser(const nlohmann::json& userData, std::string& error);
+  void insertUser(const nlohmann::json& userData, std::string& error);
 
-    bool userExists(const std::string& username, std::string& error);
+  bool userExists(const std::string& username, std::string& error);
 
-    std::pair<std::string,std::string> getPassword(const std::string& username, std::string& error);
-    // bool verifyPassword(const std::string& username, const std::string& password);
+  std::pair<std::string,std::string> getPassword(const std::string& username, std::string& error);
     
-    // void storeMessage(const std::string& sender, const std::string& recipient, const std::string& message, std::string& ex_what);
-    void storeMessage(const nlohmann::json& message_json, std::string& error);
+  void storeMessage(const nlohmann::json& message_json, std::string& error);
 
-    nlohmann::json getMessages(const std::string& username, std::string& error);
+  nlohmann::json getMessages(const std::string& username, std::string& error);
         
 private:
-    mongocxx::client _client;
-    mongocxx::database _db;
-    mongocxx::collection _usersCollection;
-    mongocxx::collection _messagesCollection;
+  mongocxx::client _client;
+  mongocxx::database _db;
+  mongocxx::collection _usersCollection;
+  mongocxx::collection _messagesCollection;
     
-    void markMessageAsRead(const std::string& messageId);
-    
+  void markMessageAsRead(const std::string& messageId);  
 };

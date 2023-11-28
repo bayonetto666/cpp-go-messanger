@@ -29,13 +29,10 @@ bool DBClient::UserExists(const std::string& username){
   grpc::ClientContext context;
   grpc::Status status = stub_->UserExists(&context, request, &response);
   
-  if (status.ok())
-  {
-    return response.exists();
+  if (!status.ok()) {
+    
   }
-  else{
-  
-  }
+  return response.exists();
 }
 
 bool DBClient::storeMessage(const std::string& recipient, const std::string& sender, const std::string& text, std::string& error){
@@ -48,32 +45,26 @@ bool DBClient::storeMessage(const std::string& recipient, const std::string& sen
   grpc::ClientContext context;
   grpc::Status status = stub_->StoreMessage(&context, message, &response);
   
-  if (status.ok())
-  {
-    return response.success();
+  if (!status.ok()) {
+    return false;
   }
+  return response.success();
 }
 
 std::vector<Message> DBClient::GetMessages(const std::string &username) {
-  // Создание объекта запроса
   GetMessagesRequest request;
   request.set_user(username);
   std::vector<Message> messages;
-  // Создание объекта контекста
   grpc::ClientContext context;
 
-  // Создание объекта для приема данных от сервера
   std::unique_ptr<grpc::ClientReader<Message>> reader(stub_->GetMessages(&context, request));
 
-  // Чтение данных от сервера
   Message message;
   while (reader->Read(&message)) {
-    // Обработка полученного сообщения
     std::cout << "Received message from " << message.sender() << ": " << message.text() << std::endl;
     messages.push_back(message);
   }
 
-  // Получение статуса вызова
   grpc::Status status = reader->Finish();
   if (status.ok()) {
     std::cout << "GetMessages RPC succeeded." << std::endl;
@@ -82,19 +73,20 @@ std::vector<Message> DBClient::GetMessages(const std::string &username) {
   }
   return messages;
 }
+
 std::pair<std::string,std::string> DBClient::GetPassword(const std::string& username, std::string& error){
-        grpc::ClientContext context;
-        GetPasswordRequest request;
-        request.set_username(username);
-        GetPasswordResponse response;
-        grpc::Status status = stub_->GetPassword(&context, request, &response);
+  grpc::ClientContext context;
+  GetPasswordRequest request;
+  request.set_username(username);
+  GetPasswordResponse response;
+  grpc::Status status = stub_->GetPassword(&context, request, &response);
         
-        if (status.ok()) {
-            return std::make_pair(response.hashed_password(), response.salt());
-        } else {
-            std::cerr << "Error: " << status.error_message() << std::endl;
-            error = status.error_message();
-            return std::make_pair("", "");
-        }
-    }
+  if (status.ok()) {
+    return std::make_pair(response.hashed_password(), response.salt());
+  } else {
+    std::cerr << "Error: " << status.error_message() << std::endl;
+    error = status.error_message();
+    return std::make_pair("", "");
+  }
+}
 

@@ -30,7 +30,6 @@ public:
     
   void listen();
   void run();
-  // void stop();
     
 private:
   asio::io_context _context;
@@ -38,8 +37,6 @@ private:
   asio::ip::tcp::endpoint _serverEndpoint;
   asio::ip::tcp::acceptor _acceptor;
     
-  // asio::ip::tcp::acceptor _wsAcceptor;
-
   bool _isRunning = false;
   std::string _secretKey;
 

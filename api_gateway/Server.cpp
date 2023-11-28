@@ -10,10 +10,6 @@ Server::Server()
     _auth("0.0.0.0:50052"),
     _chat("0.0.0.0:50041") {}
 
-// void Server::stop() {
-//     _isRunning = false;
-//     _serverSocket.close(); // Закройте серверный сокет, чтобы прервать ожидание accept
-// }
 
 void Server::run() {
   _context.run();
@@ -147,11 +143,11 @@ void Server::handleSendMessageRequest(const http::request<http::string_body>& re
 
 void Server::parseJson(const std::string& body, nlohmann::json& parsedJson, std::string& error) noexcept {
   try {
-       parsedJson = nlohmann::json::parse(body);
-    } catch (const std::exception& e) {
-      error = e.what();
-      std::cerr << "Error parsing json: " << e.what() << std::endl;
-    }
+    parsedJson = nlohmann::json::parse(body);
+  } catch (const std::exception& e) {
+    error = e.what();
+    std::cerr << "Error parsing json: " << e.what() << std::endl;
+  }
 }
 
 void Server::sendErrorResponse(asio::ip::tcp::socket& clientSocket, const http::status& errorStatus, const std::string& errorMessage, const unsigned short& version) {
@@ -191,7 +187,7 @@ void Server::handleRegisterRequest(const http::request<http::string_body> &reque
 
   try {
     http::write(clientSocket, response);
-   } catch (const std::exception& e) {
+  } catch (const std::exception& e) {
     std::cerr << "Error registering user: " << e.what() << std::endl;
     sendErrorResponse(clientSocket, http::status::bad_request, e.what(), 2);
     return;
@@ -320,7 +316,6 @@ void Server::handleWebSocketConnection(ws::stream<tcp::socket>& clientWs, const 
 }
 
 void Server::inviteUsers(const std::string& inviter, const std::string& room_id ,const std::vector<std::string> invitedUsers) {
-  //TODO: add date of invitation
   std::string message =  "user " + inviter + " invited you to chat " + room_id;
   std::string error;
   for(const auto user : invitedUsers){

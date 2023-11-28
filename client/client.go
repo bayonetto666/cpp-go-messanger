@@ -65,7 +65,6 @@ var messagesQ []WsInclomingMessage
 func main() {
 	a := app.New()
 
-	// Main window
 	mainWindow := a.NewWindow("Chat App")
 	size := fyne.Size{
 		Width:  600.0,
@@ -116,17 +115,14 @@ func readWsMessage(c *websocket.Conn, messages *[]WsInclomingMessage) {
 }
 
 func NewChatWindow() fyne.CanvasObject {
-	// Окно для чата
 	chatMessages := widget.NewMultiLineEntry()
 	chatEntry := widget.NewEntry()
 	chatEntry.SetPlaceHolder("Enter your message...")
-	// chatLabel := widget.NewLabel("")
 	chatSendButton := widget.NewButton("Send", func() {
-		// Логика отправки сообщения через WebSocket
 		message := chatEntry.Text
 		if message != "" {
 			sendWsMessage(conn, message)
-			chatEntry.SetText("") // Очистить поле ввода после отправки
+			chatEntry.SetText("")
 		}
 	})
 
@@ -190,7 +186,7 @@ func NewChatMenuWindow(mainWindow fyne.Window) fyne.CanvasObject {
 		mainWindow.SetContent(NewChatWindow())
 	})
 
-	roomIdEntry := widget.NewEntry() // форма для ввода рум айди для подключения к чату
+	roomIdEntry := widget.NewEntry()
 	roomIdEntry.SetPlaceHolder("Enter room ID...")
 
 	connectToChatButton := widget.NewButton("Connect", func() {
